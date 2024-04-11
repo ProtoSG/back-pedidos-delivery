@@ -2,16 +2,18 @@ from flask import Blueprint, request, jsonify
 from src.models.producto_model import Producto
 from src.services.producto_service import Producto_Service
 
-main = Blueprint('producto', __name__)
+producto = Blueprint('producto', __name__)
 
-@main.route('/', methods=['POST'])
+@producto.route('/producto', methods=['POST'])
 def registrar_producto():
     try:
         nombre = request.json['nombre']
         categoria_id = request.json['categoria_id']
         precio = request.json['precio']
+        descripcion = request.json['descripcion']
+        imagen_url = request.json['imagen_url']
 
-        _producto = Producto(nombre, categoria_id, precio)
+        _producto = Producto(nombre, categoria_id, precio, descripcion, imagen_url)
 
         exito, mensaje = Producto_Service.post_producto(_producto)
 
@@ -22,7 +24,7 @@ def registrar_producto():
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
-@main.route('/', methods=['GET'])
+@producto.route('/producto', methods=['GET'])
 def listar_producto():
     try:
         productos = Producto_Service.get_producto()
@@ -30,11 +32,11 @@ def listar_producto():
         if productos:
             return jsonify(productos)
         else:
-            return jsonify({'mensaje': 'No hay productos'})
+            return jsonify([])
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
         
-@main.route('/<int:id>', methods=['GET'])
+@producto.route('/producto/<int:id>', methods=['GET'])
 def obtener_producto(id):
     try:
         producto = Producto_Service.get_producto_by_id(id)
@@ -45,14 +47,16 @@ def obtener_producto(id):
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
-@main.route('/<int:id>', methods=['PUT'])
+@producto.route('/producto/<int:id>', methods=['PUT'])
 def actualizar_producto(id):
     try:
         nombre = request.json['nombre']
-        categoria = request.json['categoria']
+        categoria_id = request.json['categoria_id']
         precio = request.json['precio']
+        descripcion = request.json['descripcion']
+        imagen_url = request.json['imagen_url']
 
-        producto = Producto(nombre, categoria, precio, id)
+        producto = Producto(nombre, categoria_id, precio, descripcion, imagen_url , id)
         
         exito, mensaje = Producto_Service.update_prodcuto(producto)
         if exito:
@@ -62,7 +66,7 @@ def actualizar_producto(id):
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
-@main.route('/<int:id>', methods=['DELETE'])
+@producto.route('/producto/<int:id>', methods=['DELETE'])
 def eliminar_producto(id):
     try:
         exito, mensaje = Producto_Service.delete_producto(id)

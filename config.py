@@ -1,9 +1,9 @@
-from decouple import config
+# from decouple import config
 
-class Config():
-    SECRET_KEY = config('SECRET_KEY')
+# class Config():
+#     # SECRET_KEY = config('SECRET_KEY')
 
-class DevelopmentConfig(Config):
+class DevelopmentConfig():
     DEBUG = True
 
 config = {

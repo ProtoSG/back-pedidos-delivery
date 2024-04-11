@@ -8,8 +8,8 @@ class Extra_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "INSERT INTO Extra (nombre, precio) VALUES (%s, %s)"
-            cursor.execute(sql, (extra.nombre, extra.precio))
+            sql = "INSERT INTO Extra (nombre, precio, imagen_url) VALUES (%s, %s, %s)"
+            cursor.execute(sql, (extra.nombre, extra.precio, extra.imagen_url))
             connection.commit()
             return True, 'Extra registrada'
         except Exception as ex:
@@ -28,7 +28,7 @@ class Extra_Service():
             datos = cursor.fetchall()
             extras = []
             for dato in datos:
-                extra = Extra(dato[1], dato[2], dato[0])
+                extra = Extra(dato[1], dato[2], dato[3], dato[0])
                 extras.append(extra.to_json())
             return extras
         except Exception as ex:
@@ -43,7 +43,7 @@ class Extra_Service():
             cursor.execute(sql, (id))
             dato = cursor.fetchone()
             if dato:
-                extra = Extra(dato[1], dato[2], dato[0])
+                extra = Extra(dato[1], dato[2], dato[3], dato[0])
                 return extra.to_json()
             else:
                 return None
@@ -55,8 +55,8 @@ class Extra_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "UPDATE Extra SET nombre = %s, precio = %s WHERE extra_id = %s"
-            cursor.execute(sql, (extra.nombre, extra.precio, extra.id))
+            sql = "UPDATE Extra SET nombre = %s, precio = %s, imagen_url = %s WHERE extra_id = %s"
+            cursor.execute(sql, (extra.nombre, extra.precio, extra.imagen_url, extra.id))
             connection.commit()
             return True, "Extra actualizada"
         except Exception as ex:

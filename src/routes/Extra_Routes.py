@@ -2,14 +2,15 @@ from flask import Blueprint, request, jsonify
 from src.models.extra_model import Extra
 from src.services.extra_service import Extra_Service
 
-main = Blueprint('extra', __name__)
+extra = Blueprint('extra', __name__)
 
-@main.route('/', methods=['POST'])
+@extra.route('/extra', methods=['POST'])
 def registrar_extra():
     try:
         nombre = request.json['nombre']
         precio = request.json['precio']
-        extra = Extra(nombre, precio)
+        imagen_url = request.json['imagen_url']
+        extra = Extra(nombre, precio, imagen_url)
         exito, mensaje = Extra_Service.post_extra(extra)
         if exito:
             return jsonify({'mensaje' : mensaje})
@@ -18,7 +19,7 @@ def registrar_extra():
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
 
-@main.route('/', methods=['GET'])
+@extra.route('/extra', methods=['GET'])
 def listar_extra():
     try:
         extras = Extra_Service.get_extra()
@@ -26,11 +27,11 @@ def listar_extra():
         if extras:
             return jsonify(extras)
         else:
-            return jsonify({'mensaje': 'No hay productos'})
+            return jsonify([])
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
         
-@main.route('/<int:id>', methods=['GET'])
+@extra.route('/extra/<int:id>', methods=['GET'])
 def obtener_extra(id):
     try:
         extra = Extra_Service.get_extra_by_id(id)
@@ -41,13 +42,13 @@ def obtener_extra(id):
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
-@main.route('/<int:id>', methods=['PUT'])
+@extra.route('/extra/<int:id>', methods=['PUT'])
 def actualizar_extra(id):
     try:
         nombre = request.json['nombre']
         precio = request.json['precio']
-
-        extra = Extra(nombre, precio, id)
+        imagen_url = request.json['imagen_url']
+        extra = Extra(nombre, precio, imagen_url, id)
         
         exito, mensaje = Extra_Service.update_extra(extra)
         if exito:
@@ -57,7 +58,7 @@ def actualizar_extra(id):
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
-@main.route('/<int:id>', methods=['DELETE'])
+@extra.route('/extra/<int:id>', methods=['DELETE'])
 def eliminar_extra(id):
     try:
         exito, mensaje = Extra_Service.delete_extra(id)
