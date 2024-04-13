@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
 from src.models.categoria_model import Categoria
 from src.services.categoria_service import Categoria_Service
-
+from flask_jwt_extended import jwt_required
 categoria = Blueprint('categoria', __name__)
 
 @categoria.route('/categoria', methods=['POST'])
+@jwt_required()
 def registrar_categoria():
     try:
         nombre = request.json['nombre']
@@ -42,6 +43,7 @@ def obtener_categoria(id):
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
 @categoria.route('/categoria/<int:id>', methods=['PUT'])
+@jwt_required()
 def actualizar_categoria(id):
     try:
         nombre = request.json['nombre']
@@ -57,6 +59,7 @@ def actualizar_categoria(id):
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
 @categoria.route('/categoria/<int:id>', methods=['DELETE'])
+@jwt_required()
 def eliminar_categoria(id):
     try:
         exito, mensaje = Categoria_Service.delete_categoria(id)

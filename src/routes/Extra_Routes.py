@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from src.models.extra_model import Extra
 from src.services.extra_service import Extra_Service
+from flask_jwt_extended import jwt_required
 
 extra = Blueprint('extra', __name__)
 
 @extra.route('/extra', methods=['POST'])
+@jwt_required()
 def registrar_extra():
     try:
         nombre = request.json['nombre']
@@ -43,6 +45,7 @@ def obtener_extra(id):
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
 @extra.route('/extra/<int:id>', methods=['PUT'])
+@jwt_required()
 def actualizar_extra(id):
     try:
         nombre = request.json['nombre']
@@ -59,6 +62,7 @@ def actualizar_extra(id):
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
 @extra.route('/extra/<int:id>', methods=['DELETE'])
+@jwt_required()
 def eliminar_extra(id):
     try:
         exito, mensaje = Extra_Service.delete_extra(id)
