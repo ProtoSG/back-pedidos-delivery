@@ -14,6 +14,8 @@ def registrar_admin():
 
         admin_exist = Admin_Service.get_admin_by_username(username)
 
+        print(admin_exist)
+
         if admin_exist:
             return jsonify({'mensaje': 'El admin ya existe'}), 400
 

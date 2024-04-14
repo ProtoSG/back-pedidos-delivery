@@ -31,7 +31,7 @@ def listar_producto():
     try:
         productos = Producto_Service.get_producto()
         if productos:
-            return jsonify(productos),
+            return jsonify(productos)
         else:
             return jsonify([])
     except Exception as ex:
