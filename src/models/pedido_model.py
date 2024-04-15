@@ -9,5 +9,5 @@ class Pedido():
         return {
             'id' : self.id,
             'total' : self.total,
-            'fecha hora' : self.fecha_hora
+            'fecha_hora' : self.fecha_hora
         }

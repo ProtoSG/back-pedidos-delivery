@@ -10,8 +10,8 @@ DROP TABLE if EXISTS Admin;
 
 CREATE TABLE Admin(
     admin_id INT AUTO_INCREMENT PRIMARY KEY,
-    admin_username VARCHAR(40) NOT NULL,
-    admin_password VARCHAR(60) NOT NULL
+    username VARCHAR(40) NOT NULL,
+    password VARCHAR(60) NOT NULL
 );
 
 CREATE TABLE Categoria(

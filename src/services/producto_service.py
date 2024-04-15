@@ -25,19 +25,25 @@ class Producto_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "SELECT * FROM Producto"
+            sql = """
+                SELECT p.producto_id, p.nombre, p.precio, p.descripcion, p.imagen_url, c.categoria_id, c.nombre AS nombre_categoria
+                FROM Producto p
+                JOIN Categoria c ON p.categoria_id = c.categoria_id;
+            """
             cursor.execute(sql)
             datos = cursor.fetchall()
             productos = []
             for fila in datos:
-                categoria = Categoria_Service.get_categoria_by_id(fila[2])
                 producto = {
                     'id': fila[0],
                     'nombre': fila[1],
-                    'precio': fila[3],
-                    'descripcion': fila[4],
-                    'imagen_url': fila[5],
-                    'categoria': categoria
+                    'precio': fila[2],
+                    'descripcion': fila[3],
+                    'imagen_url': fila[4],
+                    'categoria': {
+                        'id' : fila[5],
+                        'nombre' : fila[6]
+                    }
                 }
                 productos.append(producto)
             return productos
@@ -49,18 +55,26 @@ class Producto_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "SELECT * FROM Producto WHERE producto_id = %s"
+            sql = """
+                SELECT p.producto_id, p.nombre, p.precio, p.descripcion, p.imagen_url, c.categoria_id, c.nombre AS nombre_categoria
+                FROM Producto p
+                JOIN Categoria c ON p.categoria_id = c.categoria_id
+                WHERE p.producto_id = %s;
+            """
             cursor.execute(sql, (id))
             dato = cursor.fetchone()
+            print(dato)
             if dato:
-                categoria = Categoria_Service.get_categoria_by_id(dato[2])
                 _producto = {
                     'id': dato[0],
                     'nombre': dato[1],
-                    'precio': dato[3],
-                    'descripcion': dato[4],
-                    'imagen_url': dato[5],
-                    'categoria': categoria
+                    'precio': dato[2],
+                    'descripcion': dato[3],
+                    'imagen_url': dato[4],
+                    'categoria': {
+                        'id' : dato[5],
+                        'nombre' : dato[6],
+                    }
                 }
                 return _producto
             else:

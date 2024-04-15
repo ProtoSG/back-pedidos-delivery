@@ -1,5 +1,5 @@
 from flask import Flask
-from .routes import categoria, extra, producto, admin, login
+from .routes import categoria, extra, producto, admin, login, pedido
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -15,6 +15,7 @@ def init_app(config):
     app.register_blueprint(producto)
     app.register_blueprint(admin)
     app.register_blueprint(login)
+    app.register_blueprint(pedido)
 
 
     return app
