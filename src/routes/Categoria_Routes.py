@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from src.models.categoria_model import Categoria
 from src.services.categoria_service import Categoria_Service
 from flask_jwt_extended import jwt_required
+
 categoria = Blueprint('categoria', __name__)
 
 @categoria.route('/categoria', methods=['POST'])

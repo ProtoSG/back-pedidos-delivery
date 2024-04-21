@@ -1,6 +1,6 @@
 class Pedido_Producto():
 
-    def __init__(self, pedido_id, producto_id, cantidad, sub_total) -> None:
+    def __init__(self, pedido_id, producto_id, cantidad, sub_total = None) -> None:
         self.pedido_id = pedido_id
         self.producto_id = producto_id
         self.cantidad = cantidad

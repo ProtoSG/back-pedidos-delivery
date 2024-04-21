@@ -2,8 +2,7 @@ from src.database.db_mysql import get_connection
 from src.models.producto_model import Producto
 from src.services.categoria_service import Categoria_Service
 
-class Producto_Service():
-        
+class Producto_Service():    
     @classmethod
     def post_producto(cls, producto):
         try:
@@ -12,7 +11,7 @@ class Producto_Service():
             sql = """INSERT INTO Producto (nombre, categoria_id, precio, descripcion, imagen_url)
                      VALUES (%s, %s, %s, %s, %s)"""
             cursor.execute(sql, (producto.nombre, producto.categoria_id, producto.precio, producto.descripcion, producto.imagen_url))
-            connection.commit()  # Confirma la acción de inserción.
+            connection.commit()
             return True, 'Producto registrado'
         except Exception as ex:
             return False, str(ex)

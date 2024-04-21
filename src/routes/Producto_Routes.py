@@ -22,7 +22,7 @@ def registrar_producto():
         if exito:
             return jsonify({'mensaje' : mensaje})
         else:
-            return jsonify({'mensaje': 'No se pudo registrar el producto'})
+            return jsonify({'mensaje': f'No se pudo registrar el producto {mensaje}'})
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
