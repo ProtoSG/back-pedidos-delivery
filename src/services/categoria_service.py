@@ -76,3 +76,43 @@ class Categoria_Service():
             return True, "Categoria eliminada"
         except Exception as ex:
             return False, str(ex)
+
+    @classmethod
+    def get_rank(cls, date):
+        try:
+            connection = get_connection()
+            cursor = connection.cursor()
+            date_intervlas = {
+                'dia' : 'CURDATE()',
+                'semana': 'DATE_SUB(NOW(), INTERVAL 7 DAY)',
+                'mes': 'DATE_SUB(NOW(), INTERVAL 1 MONTH)',
+                'año': 'DATE_SUB(NOW(), INTERVAL 1 YEAR)'
+            }
+            date_interval = date_intervlas.get(date)
+
+            sql = """
+                SELECT c.categoria_id, c.nombre, SUM(pp.sub_total) AS total
+                FROM Producto p
+                JOIN Categoria c ON p.categoria_id = c.categoria_id
+                JOIN Pedido_Producto pp ON p.producto_id = pp.producto_id
+                JOIN Pedido pe ON pp.pedido_id = pe.pedido_id
+                WHERE DATE(pe.fecha_hora) >= CURDATE()
+                GROUP BY c.categoria_id, c.nombre;
+            """.format(date_interval)
+
+            cursor.execute(sql)
+            datos = cursor.fetchall()
+            categorias = []
+            for dato in datos:
+                categoria = {
+                    "id" : dato[0],
+                    "nombre" : dato[1],
+                    "total" : dato[2]
+                }
+                categorias.append(categoria)
+            return categorias
+        except Exception as ex:
+            return str(ex)
+        finally:
+            cursor.close()
+            connection.close()

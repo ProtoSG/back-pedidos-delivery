@@ -71,3 +71,12 @@ def eliminar_categoria(id):
     except Exception as ex:
          return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
+@categoria.route('/categoria/rank/<string:date>', methods=['GET'])
+def listar_rank_categoria(date):
+    try:
+        categorias = Categoria_Service.get_rank(date)
+        if categorias:
+            return jsonify(categorias)
+        return jsonify([])
+    except Exception as ex:
+        return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500

@@ -17,3 +17,12 @@ def get_pedido_extra(id):
 
 
 
+@pedido_extra.route('/pedido_extra/rank_extra/<string:date>', methods=['GET'])
+def listar_rank_extras(date):
+    try:
+        extras = Pedido_Extra_Service.get_rank_extra(date)
+        if extras:
+            return jsonify(extras)
+        return jsonify([])
+    except Exception as ex:
+        return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500

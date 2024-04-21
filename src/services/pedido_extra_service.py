@@ -33,3 +33,46 @@ class Pedido_Extra_Service():
         finally:
             cursor.close()
             connection.close()
+
+    @classmethod
+    def get_rank_extra(cls, date):
+        try:
+            connection  = get_connection()
+            cursor = connection.cursor()
+            date_intervals = {
+                'dia': 'CURDATE()',
+                'semana': 'DATE_SUB(NOW(), INTERVAL 7 DAY)',
+                'mes': 'DATE_SUB(NOW(), INTERVAL 1 MONTH)',
+                'año': 'DATE_SUB(NOW(), INTERVAL 1 YEAR)'
+            }
+
+            date_interval = date_intervals.get(date)
+            if not date_interval:
+                raise ValueError("Intervalo de fecha no válido")
+
+            sql = """
+                SELECT e.extra_id, e.nombre, SUM(pe.cantidad) AS cantidad_ventas
+                FROM Pedido_Extra pe
+                JOIN Extra e ON pe.extra_id = e.extra_id
+                JOIN Pedido p ON pe.pedido_id = p.pedido_id
+                WHERE DATE(p.fecha_hora) >= {}
+                GROUP BY pe.extra_id, e.nombre
+            """.format(date_interval)
+
+            cursor.execute(sql)
+            datos = cursor.fetchall()
+            extras = []
+            for dato in datos:
+                extra = {
+                    "extra_id" : dato[0],
+                    "nombre" : dato[1],
+                    "cantidad" : dato[2]
+                }
+                extras.append(extra)
+            return extras
+        except Exception as ex:
+            return str(ex)
+        finally:
+            cursor.close()
+            connection.close()
+            

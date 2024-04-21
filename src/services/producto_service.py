@@ -21,6 +21,8 @@ class Producto_Service():
 
     @classmethod
     def get_producto(cls):
+        connection = None
+        cursor = None
         try:
             connection = get_connection()
             cursor = connection.cursor()
