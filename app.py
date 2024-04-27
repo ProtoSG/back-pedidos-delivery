@@ -1,9 +1,9 @@
-from config import config
+from config import confi
 from src import init_app
 from flask_jwt_extended import JWTManager
 
 
-configuration = config['development']
+configuration = confi['development']
 app = init_app(configuration)
 jwt = JWTManager(app)
 

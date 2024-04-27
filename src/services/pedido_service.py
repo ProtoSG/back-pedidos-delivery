@@ -8,14 +8,14 @@ class Pedido_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "INSERT INTO Pedido (total, fecha_hora) VALUES (%s, %s)"
+            sql = "INSERT INTO Pedido (total, fecha_hora) VALUES (?, ?)"
             cursor.execute(sql, (total, fecha_hora))
             pedido_id = cursor.lastrowid
             connection.commit()
             return pedido_id
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def post_pedido(cls, pedido, productos, extras):
@@ -49,14 +49,14 @@ class Pedido_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
     
     @classmethod
     def get_pedido_by_id(cls, id):
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "SELECT * FROM Pedido WHERE pedido_id = %s"
+            sql = "SELECT * FROM Pedido WHERE pedido_id = ?"
             cursor.execute(sql, (id))
             dato = cursor.fetchone()
             pedido = {}
@@ -71,14 +71,14 @@ class Pedido_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
     
     @classmethod
     def update_pedido(cls, pedido):
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "UPDATE Pedido SET total = %s WHERE pedido_id = %s"
+            sql = "UPDATE Pedido SET total = ? WHERE pedido_id = ?"
             cursor.execute(sql, (pedido.total, pedido.id))
             connection.commit()
             return True, "Pedido Actualizado"
@@ -86,7 +86,7 @@ class Pedido_Service():
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
             
     @classmethod
     def get_total_dia(cls):
@@ -113,7 +113,7 @@ class Pedido_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
     
     @classmethod
     def get_total_semana(cls):
@@ -145,7 +145,7 @@ class Pedido_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_total_mes(cls):
@@ -176,7 +176,7 @@ class Pedido_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_total_ano(cls):
@@ -206,4 +206,4 @@ class Pedido_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()

@@ -8,7 +8,7 @@ class Admin_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "INSERT INTO Admin (username, password) VALUES (%s, %s)"
+            sql = "INSERT INTO Admin (username, password) VALUES (?, ?)"
             cursor.execute(sql, (admin.username, admin.password))
             connection.commit()
             return True, 'Admin registrado'
@@ -16,15 +16,15 @@ class Admin_Service():
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_admin_by_id(cls, id):
         try:
             conneciton = get_connection()
             cursor = conneciton.cursor()
-            sql = "SELECT * FROM Admin WHERE admin_id = %s"
-            cursor.execute(sql, (id))
+            sql = "SELECT * FROM Admin WHERE admin_id = ?"
+            cursor.execute(sql, (id,))
             dato = cursor.fetchone()
             if dato:
                 admin = Admin(dato[1], dato[0])
@@ -39,8 +39,8 @@ class Admin_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "SELECT * FROM Admin WHERE username = %s"
-            cursor.execute(sql, (username))
+            sql = "SELECT * FROM Admin WHERE username = ?"
+            cursor.execute(sql, (username,))
             dato = cursor.fetchone()
             if dato:
                 admin = Admin(dato[1], dato[2])

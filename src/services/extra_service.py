@@ -8,7 +8,7 @@ class Extra_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "INSERT INTO Extra (nombre, precio, imagen_url) VALUES (%s, %s, %s)"
+            sql = "INSERT INTO Extra (nombre, precio, imagen_url) VALUES (?, ?, ?)"
             cursor.execute(sql, (extra.nombre, extra.precio, extra.imagen_url))
             connection.commit()
             return True, 'Extra registrada'
@@ -16,7 +16,7 @@ class Extra_Service():
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_extra(cls):
@@ -39,7 +39,7 @@ class Extra_Service():
         try:
             conneciton = get_connection()
             cursor = conneciton.cursor()
-            sql = "SELECT * FROM Extra WHERE extra_id = %s"
+            sql = "SELECT * FROM Extra WHERE extra_id = ?"
             cursor.execute(sql, (id))
             dato = cursor.fetchone()
             if dato:
@@ -55,7 +55,7 @@ class Extra_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "UPDATE Extra SET nombre = %s, precio = %s, imagen_url = %s WHERE extra_id = %s"
+            sql = "UPDATE Extra SET nombre = ?, precio = ?, imagen_url = ? WHERE extra_id = ?"
             cursor.execute(sql, (extra.nombre, extra.precio, extra.imagen_url, extra.id))
             connection.commit()
             return True, "Extra actualizada"
@@ -63,14 +63,14 @@ class Extra_Service():
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def delete_extra(cls, id):
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "DELETE FROM Extra WHERE extra_id = %s"
+            sql = "DELETE FROM Extra WHERE extra_id = ?"
             cursor.execute(sql, (id))
             connection.commit()
             return True, "Extra eliminada"

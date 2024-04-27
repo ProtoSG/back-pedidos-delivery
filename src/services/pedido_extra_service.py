@@ -9,18 +9,18 @@ class Pedido_Extra_Service():
                 extra_id = extra['id']
                 cantidad = extra['cantidad']
                 sub_total_extra = extra['subtotal']
-                cursor.execute("INSERT INTO Pedido_Extra (pedido_id, extra_id, cantidad, sub_total) VALUES (%s, %s, %s, %s)", (pedido_id, extra_id, cantidad, sub_total_extra))
+                cursor.execute("INSERT INTO Pedido_Extra (pedido_id, extra_id, cantidad, sub_total) VALUES (?, ?, ?, ?)", (pedido_id, extra_id, cantidad, sub_total_extra))
             connection.commit()
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_pedido_extra(cls, id):
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "SELECT * FROM Pedido_Extra WHERE pedido_id = %s"
+            sql = "SELECT * FROM Pedido_Extra WHERE pedido_id = ?"
             cursor.execute(sql, (id))
             datos = cursor.fetchall()
             pedidos_extras = []
@@ -32,7 +32,7 @@ class Pedido_Extra_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_rank_extra(cls, date):
@@ -74,5 +74,5 @@ class Pedido_Extra_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
             

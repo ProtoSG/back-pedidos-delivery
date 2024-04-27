@@ -8,15 +8,15 @@ class Categoria_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "INSERT INTO Categoria (nombre) VALUES (%s)"
-            cursor.execute(sql, (categoria.nombre))
+            sql = "INSERT INTO Categoria (nombre) VALUES (?)"
+            cursor.execute(sql, (categoria.nombre,))
             connection.commit()
             return True, 'Categoria registrada'
         except Exception as ex:
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_categoria(cls):
@@ -39,8 +39,8 @@ class Categoria_Service():
         try:
             conneciton = get_connection()
             cursor = conneciton.cursor()
-            sql = "SELECT * FROM Categoria WHERE categoria_id = %s"
-            cursor.execute(sql, (id))
+            sql = "SELECT * FROM Categoria WHERE categoria_id = ?"
+            cursor.execute(sql, (id,))
             dato = cursor.fetchone()
             if dato:
                 categoria = Categoria(dato[1], dato[0])
@@ -55,7 +55,7 @@ class Categoria_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "UPDATE Categoria SET nombre = %s WHERE categoria_id = %s"
+            sql = "UPDATE Categoria SET nombre = ? WHERE categoria_id = ?"
             cursor.execute(sql, (categoria.nombre, categoria.id))
             connection.commit()
             return True, "Categoria actualizada"
@@ -63,15 +63,15 @@ class Categoria_Service():
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def delete_categoria(cls, id):
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "DELETE FROM Categoria WHERE categoria_id = %s"
-            cursor.execute(sql, (id))
+            sql = "DELETE FROM Categoria WHERE categoria_id = ?"
+            cursor.execute(sql, (id,))
             connection.commit()
             return True, "Categoria eliminada"
         except Exception as ex:
@@ -115,4 +115,4 @@ class Categoria_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()

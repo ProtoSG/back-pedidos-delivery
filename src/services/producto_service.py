@@ -9,7 +9,7 @@ class Producto_Service():
             connection = get_connection()
             cursor = connection.cursor()
             sql = """INSERT INTO Producto (nombre, categoria_id, precio, descripcion, imagen_url)
-                     VALUES (%s, %s, %s, %s, %s)"""
+                     VALUES (?, ?, ?, ?, ?)"""
             cursor.execute(sql, (producto.nombre, producto.categoria_id, producto.precio, producto.descripcion, producto.imagen_url))
             connection.commit()
             return True, 'Producto registrado'
@@ -17,7 +17,7 @@ class Producto_Service():
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_producto(cls):
@@ -60,7 +60,7 @@ class Producto_Service():
                 SELECT p.producto_id, p.nombre, p.precio, p.descripcion, p.imagen_url, c.categoria_id, c.nombre AS nombre_categoria
                 FROM Producto p
                 JOIN Categoria c ON p.categoria_id = c.categoria_id
-                WHERE p.producto_id = %s;
+                WHERE p.producto_id = ?;
             """
             cursor.execute(sql, (id))
             dato = cursor.fetchone()
@@ -88,7 +88,7 @@ class Producto_Service():
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "UPDATE Producto SET nombre = %s, precio = %s, categoria_id = %s, descripcion = %s, imagen_url = %s WHERE producto_id = %s;"
+            sql = "UPDATE Producto SET nombre = ?, precio = ?, categoria_id = ?, descripcion = ?, imagen_url = ? WHERE producto_id = ?;"
             cursor.execute(sql, (producto.nombre, producto.precio, producto.categoria_id, producto.descripcion, producto.imagen_url, producto.id,))
             connection.commit()
             return True, "Producto actualizado exitosamente"
@@ -96,14 +96,14 @@ class Producto_Service():
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
         
     @classmethod
     def delete_producto(cls, id):
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "DELETE FROM Producto WHERE producto_id = %s"
+            sql = "DELETE FROM Producto WHERE producto_id = ?"
             cursor.execute(sql, (id))
             connection.commit()
             return True, "Producto eliminado"
@@ -111,4 +111,4 @@ class Producto_Service():
             return False, str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()

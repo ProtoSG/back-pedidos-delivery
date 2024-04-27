@@ -13,6 +13,7 @@ def registrar_admin():
         password = request.json['password']
 
         admin_exist = Admin_Service.get_admin_by_username(username)
+        print(admin_exist)
 
         if admin_exist:
             return jsonify({'mensaje': 'El admin ya existe'}), 400
@@ -23,7 +24,7 @@ def registrar_admin():
         if exito:
             return jsonify({'mensaje' : mensaje})
         else:
-            return jsonify({'mensaje' : 'No se pudo registrar el admin'})
+            return jsonify({'mensaje' : 'No se pudo registrar el admin', 'error': mensaje})
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     

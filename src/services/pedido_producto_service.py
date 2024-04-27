@@ -12,18 +12,18 @@ class Pedido_Producto_Service():
                 producto_id = producto['id']
                 cantidad = producto['cantidad']
                 sub_total_producto = producto['subtotal']
-                cursor.execute("INSERT INTO Pedido_Producto (pedido_id, producto_id, cantidad, sub_total) VALUES (%s, %s, %s, %s)", (pedido_id, producto_id, cantidad, sub_total_producto))
+                cursor.execute("INSERT INTO Pedido_Producto (pedido_id, producto_id, cantidad, sub_total) VALUES (?, ?, ?, ?)", (pedido_id, producto_id, cantidad, sub_total_producto))
             connection.commit()
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_pedido_producto(cls, id):
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "SELECT * FROM Pedido_Producto WHERE pedido_id = %s"
+            sql = "SELECT * FROM Pedido_Producto WHERE pedido_id = ?"
             cursor.execute(sql, (id))
             datos = cursor.fetchall()
             pedidos_productos = []
@@ -35,7 +35,7 @@ class Pedido_Producto_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
 
     @classmethod
     def get_rank_producto(cls, date):
@@ -79,4 +79,4 @@ class Pedido_Producto_Service():
             return str(ex)
         finally:
             cursor.close()
-            connection.close()
+            connection.sync()
