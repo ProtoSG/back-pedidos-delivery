@@ -26,6 +26,7 @@ class Categoria_Service():
             sql = "SELECT * FROM Categoria"
             cursor.execute(sql)
             datos = cursor.fetchall()
+            print(datos)
             categorias = []
             for dato in datos:
                 categoria = Categoria(dato[1], dato[0])
@@ -83,10 +84,10 @@ class Categoria_Service():
             connection = get_connection()
             cursor = connection.cursor()
             date_intervlas = {
-                'dia' : 'CURDATE()',
-                'semana': 'DATE_SUB(NOW(), INTERVAL 7 DAY)',
-                'mes': 'DATE_SUB(NOW(), INTERVAL 1 MONTH)',
-                'año': 'DATE_SUB(NOW(), INTERVAL 1 YEAR)'
+                'dia': "date('now', 'localtime')",
+                'semana': "date('now', '-7 day', 'localtime')",
+                'mes': "date('now', '-1 month', 'localtime')",
+                'año': "date('now', '-1 year', 'localtime')"
             }
             date_interval = date_intervlas.get(date)
 
@@ -96,7 +97,7 @@ class Categoria_Service():
                 JOIN Categoria c ON p.categoria_id = c.categoria_id
                 JOIN Pedido_Producto pp ON p.producto_id = pp.producto_id
                 JOIN Pedido pe ON pp.pedido_id = pe.pedido_id
-                WHERE DATE(pe.fecha_hora) >= CURDATE()
+                WHERE DATE(pe.fecha_hora) >= {}
                 GROUP BY c.categoria_id, c.nombre;
             """.format(date_interval)
 

@@ -2,10 +2,9 @@ from src.database.db_mysql import get_connection
 from src.models.pedido_producto_model import Pedido_Producto
 
 class Pedido_Producto_Service():
-    
+    @staticmethod
     def insertar_productos_pedido(pedido_id, productos):
         try:
-            print("pasa")
             connection = get_connection()
             cursor = connection.cursor()
             for producto in productos:
@@ -43,10 +42,10 @@ class Pedido_Producto_Service():
             connection = get_connection()
             cursor = connection.cursor()
             date_intervals = {
-                'dia': 'CURDATE()',
-                'semana': 'DATE_SUB(NOW(), INTERVAL 7 DAY)',
-                'mes': 'DATE_SUB(NOW(), INTERVAL 1 MONTH)',
-                'año': 'DATE_SUB(NOW(), INTERVAL 1 YEAR)'
+                'dia': "date('now', 'localtime')",
+                'semana': "date('now', '-7 day', 'localtime')",
+                'mes': "date('now', '-1 month', 'localtime')",
+                'año': "date('now', '-1 year', 'localtime')"
             }
 
             date_interval = date_intervals.get(date)

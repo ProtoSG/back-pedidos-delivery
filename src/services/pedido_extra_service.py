@@ -1,6 +1,7 @@
 from src.database.db_mysql import get_connection
 from src.models.pedido_extra_model import Pedido_Extra
 class Pedido_Extra_Service():
+    @staticmethod
     def insertar_extras_pedido(pedido_id, extras):
         try:
             connection = get_connection()
@@ -40,10 +41,10 @@ class Pedido_Extra_Service():
             connection  = get_connection()
             cursor = connection.cursor()
             date_intervals = {
-                'dia': 'CURDATE()',
-                'semana': 'DATE_SUB(NOW(), INTERVAL 7 DAY)',
-                'mes': 'DATE_SUB(NOW(), INTERVAL 1 MONTH)',
-                'año': 'DATE_SUB(NOW(), INTERVAL 1 YEAR)'
+                'dia': "date('now', 'localtime')",
+                'semana': "date('now', '-7 day', 'localtime')",
+                'mes': "date('now', '-1 month', 'localtime')",
+                'año': "date('now', '-1 year', 'localtime')"
             }
 
             date_interval = date_intervals.get(date)

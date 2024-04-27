@@ -5,12 +5,15 @@ from datetime import datetime, timedelta
 
 class Pedido_Service():
     def insertar_pedido(total, fecha_hora):
+        print(total, fecha_hora)
         try:
             connection = get_connection()
             cursor = connection.cursor()
-            sql = "INSERT INTO Pedido (total, fecha_hora) VALUES (?, ?)"
-            cursor.execute(sql, (total, fecha_hora))
+            sql = "INSERT INTO Pedido (total, fecha_hora) VALUES (?, DATETIME('now'))"
+            cursor.execute(sql, (total,))
+            print("ads")
             pedido_id = cursor.lastrowid
+            print(pedido_id)
             connection.commit()
             return pedido_id
         finally:
@@ -21,7 +24,7 @@ class Pedido_Service():
     def post_pedido(cls, pedido, productos, extras):
         try:
             pedido_id = Pedido_Service.insertar_pedido(pedido.total, pedido.fecha_hora)
-            print(pedido_id)
+            print("ID: ", pedido_id)
             Pedido_Producto_Service.insertar_productos_pedido(pedido_id, productos)
             Pedido_Extra_Service.insertar_extras_pedido(pedido_id, extras)
             return True, "Pedido creado exitosamente"
@@ -57,7 +60,7 @@ class Pedido_Service():
             connection = get_connection()
             cursor = connection.cursor()
             sql = "SELECT * FROM Pedido WHERE pedido_id = ?"
-            cursor.execute(sql, (id))
+            cursor.execute(sql, (id,))
             dato = cursor.fetchone()
             pedido = {}
             if dato:
@@ -96,16 +99,15 @@ class Pedido_Service():
             sql = """
                 SELECT DATE(fecha_hora) AS fecha, SUM(total) AS total_ventas
                 FROM Pedido
-                WHERE fecha_hora >= DATE_SUB(NOW(), INTERVAL 7 DAY)
-                GROUP BY DATE(fecha_hora)
-                ORDER BY fecha ASC;
+                WHERE fecha_hora >= datetime('now', '-7 day')
+                GROUP BY DATE(fecha_hora);
             """
             cursor.execute(sql)
             datos = cursor.fetchall()
 
             datos_dict = {fecha: valor for fecha, valor in datos}
             fechas = [datetime.now() - timedelta(days=i) for i in range(7)]
-            datos_dias = [{'time': fecha.strftime('%Y-%m-%d'), 'value': datos_dict.get(fecha.date(), 0)} for fecha in fechas]
+            datos_dias = [{'time': fecha.strftime('%Y-%m-%d'), 'value': datos_dict.get(fecha.strftime('%Y-%m-%d'), 0)} for fecha in fechas]
             datos_dias_ordenados = sorted(datos_dias, key=lambda x: x['time'])
             
             return datos_dias_ordenados
@@ -121,17 +123,18 @@ class Pedido_Service():
             connection = get_connection()
             cursor = connection.cursor()
             sql = """
-                SELECT YEARWEEK(fecha_hora) AS semana, SUM(total) AS total_ventas
+                SELECT strftime('%Y-%W', fecha_hora) AS semana, SUM(total) AS total_ventas
                 FROM Pedido
-                GROUP BY YEARWEEK(fecha_hora);
+                GROUP BY strftime('%Y-%W', fecha_hora);
             """
             cursor.execute(sql)
             datos = cursor.fetchall()
             datos_semanas = []
             for dato in datos:
+                print(dato[0])
                 fecha_str = str(dato[0])
                 ano = int(fecha_str[:4])
-                semana = int(fecha_str[4:])
+                semana = int(fecha_str[5:])
                 fecha_semana = datetime.strptime(f"{ano}-W{semana}-1", "%Y-W%W-%w")
                 fecha = fecha_semana.strftime("%Y-%m-%d")
                 dato_semana = {
@@ -153,9 +156,9 @@ class Pedido_Service():
             connection = get_connection()
             cursor = connection.cursor()
             sql = """
-                SELECT DATE_FORMAT(fecha_hora, '%Y-%m') AS mes, SUM(total) AS total_ventas
+                SELECT strftime('%Y-%m', fecha_hora) AS mes, SUM(total) AS total_ventas
                 FROM Pedido
-                GROUP BY DATE_FORMAT(fecha_hora, '%Y-%m');
+                GROUP BY strftime('%Y-%m', fecha_hora);
             """
             cursor.execute(sql)
             datos = cursor.fetchall()
@@ -184,9 +187,9 @@ class Pedido_Service():
             connection = get_connection()
             cursor = connection.cursor()
             sql = """
-                SELECT YEAR(fecha_hora) AS año, SUM(total) AS total_ventas
+                SELECT strftime('%Y', fecha_hora) AS año, SUM(total) AS total_ventas
                 FROM Pedido
-                GROUP BY YEAR(fecha_hora);
+                GROUP BY strftime('%Y', fecha_hora);
             """
             cursor.execute(sql)
             datos = cursor.fetchall()

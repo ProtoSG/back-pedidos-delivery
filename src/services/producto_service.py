@@ -62,7 +62,7 @@ class Producto_Service():
                 JOIN Categoria c ON p.categoria_id = c.categoria_id
                 WHERE p.producto_id = ?;
             """
-            cursor.execute(sql, (id))
+            cursor.execute(sql, (id,))
             dato = cursor.fetchone()
             print(dato)
             if dato:
