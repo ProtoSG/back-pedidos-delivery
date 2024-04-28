@@ -1,38 +1,45 @@
 from src.database.db_mysql import get_connection
 from src.models.producto_model import Producto
 from src.services.categoria_service import Categoria_Service
+from sqlalchemy import text
+from sqlalchemy import select
+from src.models.producto_model import Producto
+from sqlalchemy.orm import Session
 
 class Producto_Service():    
     @classmethod
     def post_producto(cls, producto):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = """INSERT INTO Producto (nombre, categoria_id, precio, descripcion, imagen_url)
-                     VALUES (?, ?, ?, ?, ?)"""
-            cursor.execute(sql, (producto.nombre, producto.categoria_id, producto.precio, producto.descripcion, producto.imagen_url))
+            sql = text("""
+                INSERT INTO Producto (nombre, categoria_id, precio, descripcion, imagen_url)
+                VALUES (:nombre, :categoria_id, :precio, :descripcion, :imagen_url)
+            """)
+            connection.execute(sql, {
+                'nombre': producto.nombre,
+                'categoria_id': producto.categoria_id,
+                'precio': producto.precio,
+                'descripcion': producto.descripcion,
+                'imagen_url': producto.imagen_url
+            })
             connection.commit()
             return True, 'Producto registrado'
         except Exception as ex:
             return False, str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
 
     @classmethod
     def get_producto(cls):
-        connection = None
-        cursor = None
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = """
+            sql = text("""
                 SELECT p.producto_id, p.nombre, p.precio, p.descripcion, p.imagen_url, c.categoria_id, c.nombre AS nombre_categoria
                 FROM Producto p
                 JOIN Categoria c ON p.categoria_id = c.categoria_id;
-            """
-            cursor.execute(sql)
-            datos = cursor.fetchall()
+            """)
+            
+            datos = connection.execute(sql)
             productos = []
             for fila in datos:
                 producto = {
@@ -55,16 +62,13 @@ class Producto_Service():
     def get_producto_by_id(cls, id):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = """
+            sql = text("""
                 SELECT p.producto_id, p.nombre, p.precio, p.descripcion, p.imagen_url, c.categoria_id, c.nombre AS nombre_categoria
                 FROM Producto p
                 JOIN Categoria c ON p.categoria_id = c.categoria_id
-                WHERE p.producto_id = ?;
-            """
-            cursor.execute(sql, (id,))
-            dato = cursor.fetchone()
-            print(dato)
+                WHERE p.producto_id = :id;
+            """)
+            dato = connection.execute(sql, {'id': id}).fetchone()
             if dato:
                 _producto = {
                     'id': dato[0],
@@ -87,28 +91,30 @@ class Producto_Service():
     def update_prodcuto(cls, producto):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "UPDATE Producto SET nombre = ?, precio = ?, categoria_id = ?, descripcion = ?, imagen_url = ? WHERE producto_id = ?;"
-            cursor.execute(sql, (producto.nombre, producto.precio, producto.categoria_id, producto.descripcion, producto.imagen_url, producto.id,))
+            sql = text("UPDATE Producto SET nombre = :nombre, precio = :precio, categoria_id = :categoria_id, descripcion = :descripcion, imagen_url = :imagen_url WHERE producto_id = :id;")
+            connection.execute(sql, {
+                "nombre" : producto.nombre,
+                "precio" : producto.precio,
+                "categoria_id" : producto.categoria_id, "descripcion" : producto.descripcion,
+                "imagen_url" : producto.imagen_url,
+                 "id" : producto.id,
+            })
             connection.commit()
             return True, "Producto actualizado exitosamente"
         except Exception as ex:
             return False, str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
         
     @classmethod
     def delete_producto(cls, id):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "DELETE FROM Producto WHERE producto_id = ?"
-            cursor.execute(sql, (id))
+            sql = text("DELETE FROM Producto WHERE producto_id = :id")
+            connection.execute(sql, {"id" : id})
             connection.commit()
             return True, "Producto eliminado"
         except Exception as ex:
             return False, str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()

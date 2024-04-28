@@ -1,67 +1,74 @@
 from src.database.db_mysql import get_connection
 from src.models.pedido_extra_model import Pedido_Extra
+from sqlalchemy import text
+
 class Pedido_Extra_Service():
+
     @staticmethod
     def insertar_extras_pedido(pedido_id, extras):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
             for extra in extras:
                 extra_id = extra['id']
                 cantidad = extra['cantidad']
                 sub_total_extra = extra['subtotal']
-                cursor.execute("INSERT INTO Pedido_Extra (pedido_id, extra_id, cantidad, sub_total) VALUES (?, ?, ?, ?)", (pedido_id, extra_id, cantidad, sub_total_extra))
+                sql = text("INSERT INTO Pedido_Extra (pedido_id, extra_id, cantidad, sub_total) VALUES (:pedido_id, :extra_id, :cantidad, :sub_total)")
+                connection.execute(sql, {'pedido_id': pedido_id, 'extra_id': extra_id, 'cantidad': cantidad, 'sub_total': sub_total_extra})
             connection.commit()
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
 
     @classmethod
     def get_pedido_extra(cls, id):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "SELECT * FROM Pedido_Extra WHERE pedido_id = ?"
-            cursor.execute(sql, (id))
-            datos = cursor.fetchall()
+            sql = text("SELECT * FROM Pedido_Extra WHERE pedido_id = :id")
+            datos = connection.execute(sql, {'id': id}).fetchall()
             pedidos_extras = []
             for dato in datos:
-                _pedido_extra = Pedido_Extra(dato[0], dato[1], dato[2], dato[3])
+                _pedido_extra = Pedido_Extra(dato['pedido_id'], dato['extra_id'], dato['cantidad'], dato['sub_total'])
                 pedidos_extras.append(_pedido_extra.to_json())
             return pedidos_extras
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
 
     @classmethod
     def get_rank_extra(cls, date):
         try:
             connection  = get_connection()
-            cursor = connection.cursor()
-            date_intervals = {
-                'dia': "date('now', 'localtime')",
-                'semana': "date('now', '-7 day', 'localtime')",
-                'mes': "date('now', '-1 month', 'localtime')",
-                'año': "date('now', '-1 year', 'localtime')"
+            date_intervals ={
+                'dia': "date('now', 'localhost', '-5 hours')",
+                'semana': "date('now', '-7 day', 'localtime', '-5 hours')",
+                'mes': "date('now', '-1 month', 'localtime', '-5 hours')",
+                'año': "date('now', '-1 year', 'localtime', '-5 hours')"
             }
 
             date_interval = date_intervals.get(date)
             if not date_interval:
                 raise ValueError("Intervalo de fecha no válido")
 
-            sql = """
-                SELECT e.extra_id, e.nombre, SUM(pe.cantidad) AS cantidad_ventas
-                FROM Pedido_Extra pe
-                JOIN Extra e ON pe.extra_id = e.extra_id
-                JOIN Pedido p ON pe.pedido_id = p.pedido_id
-                WHERE DATE(p.fecha_hora) >= {}
-                GROUP BY pe.extra_id, e.nombre
-            """.format(date_interval)
-
-            cursor.execute(sql)
-            datos = cursor.fetchall()
+            sql = text("")
+            if date == 'dia':
+                sql = text("""
+                    SELECT e.extra_id, e.nombre, SUM(pe.cantidad) AS cantidad_ventas
+                    FROM Pedido_Extra pe
+                    JOIN Extra e ON pe.extra_id = e.extra_id
+                    JOIN Pedido p ON pe.pedido_id = p.pedido_id
+                    WHERE DATE(p.fecha_hora) = :date_interval
+                    GROUP BY pe.extra_id, e.nombre
+                """)
+            else:
+                sql = text("""
+                    SELECT e.extra_id, e.nombre, SUM(pe.cantidad) AS cantidad_ventas
+                    FROM Pedido_Extra pe
+                    JOIN Extra e ON pe.extra_id = e.extra_id
+                    JOIN Pedido p ON pe.pedido_id = p.pedido_id
+                    WHERE DATE(p.fecha_hora) <= :date_interval
+                    GROUP BY pe.extra_id, e.nombre
+                """)
+            datos = connection.execute(sql, {'date_interval': date_interval}).fetchall()
             extras = []
             for dato in datos:
                 extra = {
@@ -74,6 +81,4 @@ class Pedido_Extra_Service():
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
-            
+            connection.close()

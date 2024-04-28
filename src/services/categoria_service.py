@@ -1,5 +1,6 @@
 from src.database.db_mysql import get_connection
 from src.models.categoria_model import Categoria
+from sqlalchemy import text
 
 class Categoria_Service():
 
@@ -7,26 +8,21 @@ class Categoria_Service():
     def post_categoria(cls, categoria):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "INSERT INTO Categoria (nombre) VALUES (?)"
-            cursor.execute(sql, (categoria.nombre,))
+            sql = text("INSERT INTO Categoria (nombre) VALUES (:nombre)")
+            connection.execute(sql, (categoria.nombre,))
             connection.commit()
             return True, 'Categoria registrada'
         except Exception as ex:
             return False, str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
 
     @classmethod
     def get_categoria(cls):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "SELECT * FROM Categoria"
-            cursor.execute(sql)
-            datos = cursor.fetchall()
-            print(datos)
+            sql = text("SELECT * FROM Categoria")
+            datos = connection.execute(sql).fetchall()
             categorias = []
             for dato in datos:
                 categoria = Categoria(dato[1], dato[0])
@@ -38,11 +34,11 @@ class Categoria_Service():
     @classmethod
     def get_categoria_by_id(cls, id):
         try:
-            conneciton = get_connection()
-            cursor = conneciton.cursor()
-            sql = "SELECT * FROM Categoria WHERE categoria_id = ?"
-            cursor.execute(sql, (id,))
-            dato = cursor.fetchone()
+            connection = get_connection()
+            sql = text("SELECT * FROM Categoria WHERE categoria_id = :id")
+            dato = connection.execute(sql, {
+                "id" : id
+            }).fetchone()
             if dato:
                 categoria = Categoria(dato[1], dato[0])
                 return categoria.to_json()
@@ -55,24 +51,24 @@ class Categoria_Service():
     def update_categoria(cls, categoria):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "UPDATE Categoria SET nombre = ? WHERE categoria_id = ?"
-            cursor.execute(sql, (categoria.nombre, categoria.id))
+            sql = text("UPDATE Categoria SET nombre = :nombre WHERE categoria_id = :categoria_id")
+            connection.execute(sql, {
+                "nombre" : categoria.nombre, 
+                "categoria_id" : categoria.id
+            })
             connection.commit()
             return True, "Categoria actualizada"
         except Exception as ex:
             return False, str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
 
     @classmethod
     def delete_categoria(cls, id):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "DELETE FROM Categoria WHERE categoria_id = ?"
-            cursor.execute(sql, (id,))
+            sql = text("DELETE FROM Categoria WHERE categoria_id = :id")
+            connection.execute(sql, {"id" : id})
             connection.commit()
             return True, "Categoria eliminada"
         except Exception as ex:
@@ -82,38 +78,35 @@ class Categoria_Service():
     def get_rank(cls, date):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            date_intervlas = {
-                'dia': "date('now', 'localtime')",
-                'semana': "date('now', '-7 day', 'localtime')",
-                'mes': "date('now', '-1 month', 'localtime')",
-                'año': "date('now', '-1 year', 'localtime')"
+            date_intervals = {
+                'dia': "date('now', 'localhost', '-5 hours')",
+                'semana': "date('now', '-7 day', 'localtime', '-5 hours')",
+                'mes': "date('now', '-1 month', 'localtime', '-5 hours')",
+                'año': "date('now', '-1 year', 'localtime', '-5 hours')"
             }
-            date_interval = date_intervlas.get(date)
+            date_interval = date_intervals.get(date)
 
-            sql = """
+            sql = text("""
                 SELECT c.categoria_id, c.nombre, SUM(pp.sub_total) AS total
                 FROM Producto p
                 JOIN Categoria c ON p.categoria_id = c.categoria_id
                 JOIN Pedido_Producto pp ON p.producto_id = pp.producto_id
                 JOIN Pedido pe ON pp.pedido_id = pe.pedido_id
-                WHERE DATE(pe.fecha_hora) >= {}
+                WHERE DATE(pe.fecha_hora) <= :date_interval
                 GROUP BY c.categoria_id, c.nombre;
-            """.format(date_interval)
-
-            cursor.execute(sql)
-            datos = cursor.fetchall()
+            """)
+            
+            datos = connection.execute(sql, {'date_interval': date_interval}).fetchall()
             categorias = []
             for dato in datos:
                 categoria = {
-                    "id" : dato[0],
-                    "nombre" : dato[1],
-                    "total" : dato[2]
+                    "id": dato[0],
+                    "nombre": dato[1],
+                    "total": dato[2]
                 }
                 categorias.append(categoria)
             return categorias
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()

@@ -2,31 +2,27 @@ from src.database.db_mysql import get_connection
 from src.services.pedido_producto_service import Pedido_Producto_Service
 from src.services.pedido_extra_service import Pedido_Extra_Service
 from datetime import datetime, timedelta
+from sqlalchemy import text
 
 class Pedido_Service():
+
     def insertar_pedido(total, fecha_hora):
-        print(total, fecha_hora)
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "INSERT INTO Pedido (total, fecha_hora) VALUES (?, DATETIME('now'))"
-            cursor.execute(sql, (total,))
-            print("ads")
-            pedido_id = cursor.lastrowid
-            print(pedido_id)
+            sql = text("INSERT INTO Pedido (total, fecha_hora) VALUES (:total, :fecha_hora)")
+            pedido_id = connection.execute(sql, {'total': total, 'fecha_hora' : fecha_hora}).lastrowid
             connection.commit()
             return pedido_id
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
 
     @classmethod
     def post_pedido(cls, pedido, productos, extras):
         try:
             pedido_id = Pedido_Service.insertar_pedido(pedido.total, pedido.fecha_hora)
-            print("ID: ", pedido_id)
             Pedido_Producto_Service.insertar_productos_pedido(pedido_id, productos)
             Pedido_Extra_Service.insertar_extras_pedido(pedido_id, extras)
+            
             return True, "Pedido creado exitosamente"
         except Exception as ex:
             return False, str(ex)
@@ -35,10 +31,8 @@ class Pedido_Service():
     def get_pedido(cls):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "SELECT * FROM Pedido"
-            cursor.execute(sql)
-            datos = cursor.fetchall()
+            sql = text("SELECT * FROM Pedido")
+            datos = connection.execute(sql).fetchall()
             pedidos = []
             for dato in datos:
                 pedido = {
@@ -51,17 +45,14 @@ class Pedido_Service():
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
-    
+            connection.close()
+
     @classmethod
     def get_pedido_by_id(cls, id):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "SELECT * FROM Pedido WHERE pedido_id = ?"
-            cursor.execute(sql, (id,))
-            dato = cursor.fetchone()
+            sql = text("SELECT * FROM Pedido WHERE pedido_id = :id")
+            dato = connection.execute(sql, {'id': id}).fetchone()
             pedido = {}
             if dato:
                 pedido = {
@@ -73,37 +64,32 @@ class Pedido_Service():
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
     
     @classmethod
     def update_pedido(cls, pedido):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = "UPDATE Pedido SET total = ? WHERE pedido_id = ?"
-            cursor.execute(sql, (pedido.total, pedido.id))
+            sql = text("UPDATE Pedido SET total = :total WHERE pedido_id = :id")
+            connection.execute(sql, {'total': pedido.total, 'id': pedido.id})
             connection.commit()
             return True, "Pedido Actualizado"
         except Exception as ex:
             return False, str(ex)
         finally:
-            cursor.close()
-            connection.sync()
-            
+            connection.close()
+
     @classmethod
     def get_total_dia(cls):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = """
+            sql = text("""
                 SELECT DATE(fecha_hora) AS fecha, SUM(total) AS total_ventas
                 FROM Pedido
                 WHERE fecha_hora >= datetime('now', '-7 day')
                 GROUP BY DATE(fecha_hora);
-            """
-            cursor.execute(sql)
-            datos = cursor.fetchall()
+            """)
+            datos = connection.execute(sql).fetchall()
 
             datos_dict = {fecha: valor for fecha, valor in datos}
             fechas = [datetime.now() - timedelta(days=i) for i in range(7)]
@@ -114,24 +100,20 @@ class Pedido_Service():
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
-    
+            connection.close()
+
     @classmethod
     def get_total_semana(cls):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = """
+            sql = text("""
                 SELECT strftime('%Y-%W', fecha_hora) AS semana, SUM(total) AS total_ventas
                 FROM Pedido
                 GROUP BY strftime('%Y-%W', fecha_hora);
-            """
-            cursor.execute(sql)
-            datos = cursor.fetchall()
+            """)
+            datos = connection.execute(sql).fetchall()
             datos_semanas = []
             for dato in datos:
-                print(dato[0])
                 fecha_str = str(dato[0])
                 ano = int(fecha_str[:4])
                 semana = int(fecha_str[5:])
@@ -147,23 +129,19 @@ class Pedido_Service():
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
 
     @classmethod
     def get_total_mes(cls):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = """
+            sql = text("""
                 SELECT strftime('%Y-%m', fecha_hora) AS mes, SUM(total) AS total_ventas
                 FROM Pedido
                 GROUP BY strftime('%Y-%m', fecha_hora);
-            """
-            cursor.execute(sql)
-            datos = cursor.fetchall()
+            """)
+            datos = connection.execute(sql).fetchall()
             datos_meses = []
-            print(datos)
             for dato in datos:
                 fecha = f"{dato[0]}-01"
                 dato_mes = {
@@ -178,23 +156,19 @@ class Pedido_Service():
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()
 
     @classmethod
     def get_total_ano(cls):
         try:
             connection = get_connection()
-            cursor = connection.cursor()
-            sql = """
+            sql = text("""
                 SELECT strftime('%Y', fecha_hora) AS año, SUM(total) AS total_ventas
                 FROM Pedido
                 GROUP BY strftime('%Y', fecha_hora);
-            """
-            cursor.execute(sql)
-            datos = cursor.fetchall()
+            """)
+            datos = connection.execute(sql).fetchall()
             datos_anos = []
-            print(datos)
             for dato in datos:
                 fecha = (f"{dato[0]}-01-01")
                 dato_ano = {
@@ -208,5 +182,4 @@ class Pedido_Service():
         except Exception as ex:
             return str(ex)
         finally:
-            cursor.close()
-            connection.sync()
+            connection.close()

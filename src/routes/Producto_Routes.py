@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from src.models.producto_model import Producto
 from src.services.producto_service import Producto_Service
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from src.database.db_mysql import get_connection
 
 producto = Blueprint('producto', __name__)
 

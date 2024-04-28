@@ -1,4 +1,4 @@
-from decouple import config
+from decouple import Config, config
 
 class Config():
     def __init__(self):
