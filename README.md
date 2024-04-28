@@ -23,7 +23,7 @@ Para Windows
 .\.venv\Scripts\activate
 ```
 
-4. Descargar los dependencias
+4. Descargar las dependencias
 
 ```powershell
 pip install -r .\requirements.txt
@@ -31,4 +31,4 @@ pip install -r .\requirements.txt
 
 5. Crear un nuevo archivo en la raiz de la carpeta con el nombre `.env` para las variables de entorno.
 
-6. Pegar las pariables en el archivo creado
+6. Pegar las variables en el archivo creado
