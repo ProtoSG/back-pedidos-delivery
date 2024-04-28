@@ -22,6 +22,11 @@ Para Windows
 ```powershell
 .\.venv\Scripts\activate
 ```
+o en su defecto
+
+```powershell
+.\.venv\bin\activate
+```
 
 4. Descargar las dependencias
 
