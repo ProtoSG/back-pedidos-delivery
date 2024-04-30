@@ -9,6 +9,7 @@ class DevelopmentConfig(Config):
     def __init__(self):
         super().__init__()
         self.DEBUG = False
+        self.host = '0.0.0.0'
 
 confi = {
     'development': DevelopmentConfig()
