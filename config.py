@@ -8,7 +8,7 @@ class Config():
 class DevelopmentConfig(Config):
     def __init__(self):
         super().__init__()
-        self.DEBUG = True
+        self.DEBUG = False
 
 confi = {
     'development': DevelopmentConfig()
