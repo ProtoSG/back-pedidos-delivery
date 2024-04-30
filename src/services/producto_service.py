@@ -33,28 +33,29 @@ class Producto_Service():
     def get_producto(cls):
         try:
             connection = get_connection()
-            sql = text("""
-                SELECT p.producto_id, p.nombre, p.precio, p.descripcion, p.imagen_url, c.categoria_id, c.nombre AS nombre_categoria
-                FROM Producto p
-                JOIN Categoria c ON p.categoria_id = c.categoria_id;
-            """)
-            
-            datos = connection.execute(sql)
-            productos = []
-            for fila in datos:
-                producto = {
-                    'id': fila[0],
-                    'nombre': fila[1],
-                    'precio': fila[2],
-                    'descripcion': fila[3],
-                    'imagen_url': fila[4],
-                    'categoria': {
-                        'id' : fila[5],
-                        'nombre' : fila[6]
+            if connection is not None:
+                sql = text("""
+                    SELECT p.producto_id, p.nombre, p.precio, p.descripcion, p.imagen_url, c.categoria_id, c.nombre AS nombre_categoria
+                    FROM Producto p
+                    JOIN Categoria c ON p.categoria_id = c.categoria_id;
+                """)
+                
+                datos = connection.execute(sql)
+                productos = []
+                for fila in datos:
+                    producto = {
+                        'id': fila[0],
+                        'nombre': fila[1],
+                        'precio': fila[2],
+                        'descripcion': fila[3],
+                        'imagen_url': fila[4],
+                        'categoria': {
+                            'id' : fila[5],
+                            'nombre' : fila[6]
+                        }
                     }
-                }
-                productos.append(producto)
-            return productos
+                    productos.append(producto)
+                return productos
         except Exception as ex:
             return str(ex)
     

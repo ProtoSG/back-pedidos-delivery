@@ -17,4 +17,4 @@ def get_connection():
 
         return session
     except Exception as ex:
-        print(ex)
+        return None

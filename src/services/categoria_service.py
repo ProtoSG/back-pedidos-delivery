@@ -9,7 +9,7 @@ class Categoria_Service():
         try:
             connection = get_connection()
             sql = text("INSERT INTO Categoria (nombre) VALUES (:nombre)")
-            connection.execute(sql, (categoria.nombre,))
+            connection.execute(sql, {'nombre' : categoria.nombre})
             connection.commit()
             return True, 'Categoria registrada'
         except Exception as ex:
@@ -21,13 +21,14 @@ class Categoria_Service():
     def get_categoria(cls):
         try:
             connection = get_connection()
-            sql = text("SELECT * FROM Categoria")
-            datos = connection.execute(sql).fetchall()
-            categorias = []
-            for dato in datos:
-                categoria = Categoria(dato[1], dato[0])
-                categorias.append(categoria.to_json())
-            return categorias
+            if connection is not None:
+                sql = text("SELECT * FROM Categoria")
+                datos = connection.execute(sql).fetchall()
+                categorias = []
+                for dato in datos:
+                    categoria = Categoria(dato[1], dato[0])
+                    categorias.append(categoria.to_json())
+                return categorias
         except Exception as ex:
             return str(ex)
         
