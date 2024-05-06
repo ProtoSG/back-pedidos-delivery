@@ -9,8 +9,6 @@ class DevelopmentConfig(Config):
     def __init__(self):
         super().__init__()
         self.DEBUG = False
-        self.PORT = 3000
-        # self.host = '0.0.0.0'
 
 confi = {
     'development': DevelopmentConfig()
