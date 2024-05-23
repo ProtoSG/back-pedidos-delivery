@@ -14,7 +14,7 @@ services:
         value: "7a3738d079ed44df974885c7ced0f48c"
       - key: JWT_SECRET_KEY
         value: "XKNH1roo9eXNaD2krvm90r6GlhMHVTkENi8L5ha4N8Y"
-    databases:
-      - name: db
-        databaseType: turso
-        region: scl # O la región que prefieras
+databases:
+  - name: db
+    databaseType: turso
+    region: scl # O la región que prefieras
