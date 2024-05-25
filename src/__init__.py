@@ -10,7 +10,7 @@ def init_app(config):
     app.config.from_object(config)
     
     # Blueprints
-    app.register_blueprint(categoria)
+    app.register_blueprint(categoria, name="categoria_v2")
     app.register_blueprint(extra)
     app.register_blueprint(producto)
     app.register_blueprint(admin)
