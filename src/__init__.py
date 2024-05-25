@@ -2,10 +2,9 @@ from flask import Flask
 from .routes import categoria, extra, producto, admin, login, pedido, pedido_producto, pedido_extra
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
-
 def init_app(config):
+    app = Flask(__name__)
+    CORS(app)
     # Configuracion
     app.config.from_object(config)
     
