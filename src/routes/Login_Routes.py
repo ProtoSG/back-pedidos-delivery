@@ -16,6 +16,8 @@ def login_admin():
         password = request.json['password']
 
         admin = Admin_Service.get_admin_by_username(username)
+
+        print("ADMIN: ", admin)
         
         if not admin:
             return jsonify({'mensaje': 'El admin no existe'}), 404
@@ -27,8 +29,9 @@ def login_admin():
 
         acces_token = create_access_token(identity=username)
 
-        response = jsonify({'usernmae':admin.get('username'), 'token' : acces_token})
+        response = jsonify({'id' : admin.get('id'), 'username':admin.get('username'), 'password' : password,'token' : acces_token})
         
         return response
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
+
