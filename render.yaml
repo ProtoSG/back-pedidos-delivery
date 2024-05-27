@@ -1,20 +1,7 @@
 services:
   - type: web
-    name: back-pedidos-delivery
-    env: python # Puedes cambiar esto a python, ruby, etc., según tu stack
-    plan: free # O el plan que prefieras
-    buildCommand: "pip install -r requirements.txt" # Cambia esto según tu comando de construcción
-    startCommand: "flask run" # Cambia esto según tu comando de inicio
-    envVars:
-      - key: TURSO_DATABASE_URL
-        value: "{{ db.TURSO_DATABASE_URL }}"
-      - key: TURSO_AUTH_TOKEN
-        value: "{{ db.TURSO_AUTH_TOKEN }}"
-      - key: SECRET_KEY
-        value: "7a3738d079ed44df974885c7ced0f48c"
-      - key: JWT_SECRET_KEY
-        value: "XKNH1roo9eXNaD2krvm90r6GlhMHVTkENi8L5ha4N8Y"
-databases:
-  - name: db
-    databaseType: turso
-    region: scl # O la región que prefieras
+    name: my-flask-app
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: gunicorn -w 4 -b 0.0.0.0:8000 app:app
