@@ -58,7 +58,7 @@ class Admin_Service():
         try:
             connection = get_connection()
             print(admin.username, admin.password, admin.id)
-            sql = text("UPDATE Admin SET username :username, password :password WHERE admin_id = :admin_id;")
+            sql = text("UPDATE Admin SET username = :username, password = :password WHERE admin_id = :admin_id;")
             connection.execute(sql, {
                 "username" : admin.username,
                 "password" : admin.password,

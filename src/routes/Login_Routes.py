@@ -17,8 +17,8 @@ def login_admin():
 
         admin = Admin_Service.get_admin_by_username(username)
 
-        print("ADMIN: ", admin)
-        
+        print(admin)
+
         if not admin:
             return jsonify({'mensaje': 'El admin no existe'}), 404
 
