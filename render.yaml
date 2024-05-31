@@ -1,0 +1,5 @@
+services:
+  - type: web
+    name: back-pedidos-delivery
+    runtime: gunicorn
+    repo: https://github.com/ProtoSG/back-pedidos-delivery.git
