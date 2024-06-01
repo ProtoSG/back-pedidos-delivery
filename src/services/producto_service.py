@@ -1,10 +1,5 @@
 from src.database.db_mysql import get_connection
-from src.models.producto_model import Producto
-from src.services.categoria_service import Categoria_Service
 from sqlalchemy import text
-from sqlalchemy import select
-from src.models.producto_model import Producto
-from sqlalchemy.orm import Session
 
 class Producto_Service():    
     @classmethod

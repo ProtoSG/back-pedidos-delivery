@@ -3,8 +3,6 @@ import os
 from sqlalchemy.orm import Session, sessionmaker
 from dotenv import load_dotenv
 
-load_dotenv()
-
 def get_connection():
     # try:
     TURSO_DATABASE_URL = os.environ.get("TURSO_DATABASE_URL")
