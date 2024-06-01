@@ -27,3 +27,4 @@ sqlalchemy-libsql==0.1.0
 typing_extensions==4.11.0
 Werkzeug==3.0.2
 yarl==1.9.4
+sqlite3>=3.35.0
