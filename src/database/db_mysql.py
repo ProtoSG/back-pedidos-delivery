@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 def get_connection():
     # try:
+    load_dotenv()
     TURSO_DATABASE_URL = os.environ.get("TURSO_DATABASE_URL")
     TURSO_AUTH_TOKEN = os.environ.get("TURSO_AUTH_TOKEN")
 
