@@ -4,10 +4,17 @@ from flask_cors import CORS
 
 def init_app(config):
     app = Flask(__name__)
-    CORS(app)
+
+
     # Configuracion
     app.config.from_object(config)
     
+    CORS(
+        app, 
+        origins=[app.config["ORIGIN_URL"]],
+        supports_credentials=True
+    )
+
     # Blueprints
     app.register_blueprint(categoria)
     app.register_blueprint(extra)
