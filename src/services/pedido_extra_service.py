@@ -1,6 +1,5 @@
 from src.database.db_mysql import get_connection
 from src.models.pedido_extra_model import Pedido_Extra
-from sqlalchemy import text
 
 class Pedido_Extra_Service():
 
@@ -12,8 +11,13 @@ class Pedido_Extra_Service():
                 extra_id = extra['id']
                 cantidad = extra['cantidad']
                 sub_total_extra = extra['subtotal']
-                sql = text("INSERT INTO Pedido_Extra (pedido_id, extra_id, cantidad, sub_total) VALUES (:pedido_id, :extra_id, :cantidad, :sub_total)")
-                connection.execute(sql, {'pedido_id': pedido_id, 'extra_id': extra_id, 'cantidad': cantidad, 'sub_total': sub_total_extra})
+                sql = "INSERT INTO Pedido_Extra (pedido_id, extra_id, cantidad, sub_total) VALUES (?, ?, ?, ?)"
+                connection.execute(sql, (
+                    pedido_id, 
+                    extra_id,
+                    cantidad,
+                    sub_total_extra,
+                ))
             connection.commit()
         finally:
             connection.close()
@@ -22,8 +26,8 @@ class Pedido_Extra_Service():
     def get_pedido_extra(cls, id):
         try:
             connection = get_connection()
-            sql = text("SELECT * FROM Pedido_Extra WHERE pedido_id = :id")
-            datos = connection.execute(sql, {'id': id}).fetchall()
+            sql = "SELECT * FROM Pedido_Extra WHERE pedido_id = ?"
+            datos = connection.execute(sql, (id, )).fetchall()
             pedidos_extras = []
             for dato in datos:
                 _pedido_extra = Pedido_Extra(dato['pedido_id'], dato['extra_id'], dato['cantidad'], dato['sub_total'])
@@ -49,26 +53,26 @@ class Pedido_Extra_Service():
             if not date_interval:
                 raise ValueError("Intervalo de fecha no válido")
 
-            sql = text("")
+            sql = ""
             if date == 'dia':
-                sql = text("""
+                sql = """
                     SELECT e.extra_id, e.nombre, SUM(pe.cantidad) AS cantidad_ventas
                     FROM Pedido_Extra pe
                     JOIN Extra e ON pe.extra_id = e.extra_id
                     JOIN Pedido p ON pe.pedido_id = p.pedido_id
-                    WHERE DATE(p.fecha_hora) = :date_interval
+                    WHERE DATE(p.fecha_hora) = ?
                     GROUP BY pe.extra_id, e.nombre
-                """)
+                """
             else:
-                sql = text("""
+                sql = """
                     SELECT e.extra_id, e.nombre, SUM(pe.cantidad) AS cantidad_ventas
                     FROM Pedido_Extra pe
                     JOIN Extra e ON pe.extra_id = e.extra_id
                     JOIN Pedido p ON pe.pedido_id = p.pedido_id
-                    WHERE DATE(p.fecha_hora) <= :date_interval
+                    WHERE DATE(p.fecha_hora) <= ?
                     GROUP BY pe.extra_id, e.nombre
-                """)
-            datos = connection.execute(sql, {'date_interval': date_interval}).fetchall()
+                """
+            datos = connection.execute(sql, ( date_interval, )).fetchall()
             extras = []
             for dato in datos:
                 extra = {

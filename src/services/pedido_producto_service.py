@@ -1,6 +1,5 @@
 from src.database.db_mysql import get_connection
 from src.models.pedido_producto_model import Pedido_Producto
-from sqlalchemy import text
 
 class Pedido_Producto_Service():
 
@@ -12,8 +11,13 @@ class Pedido_Producto_Service():
                 producto_id = producto['id']
                 cantidad = producto['cantidad']
                 sub_total_producto = producto['subtotal']
-                sql = text("INSERT INTO Pedido_Producto (pedido_id, producto_id, cantidad, sub_total) VALUES (:pedido_id, :producto_id, :cantidad, :sub_total)")
-                connection.execute(sql, {'pedido_id': pedido_id, 'producto_id': producto_id, 'cantidad': cantidad, 'sub_total': sub_total_producto})
+                sql = "INSERT INTO Pedido_Producto (pedido_id, producto_id, cantidad, sub_total) VALUES (?, ?, ?, ?)"
+                connection.execute(sql, (
+                    pedido_id,
+                    producto_id,
+                    cantidad,
+                    sub_total_producto,
+                ))
             connection.commit()
         finally:
             connection.close()
@@ -22,8 +26,8 @@ class Pedido_Producto_Service():
     def get_pedido_producto(cls, id):
         try:
             connection = get_connection()
-            sql = text("SELECT * FROM Pedido_Producto WHERE pedido_id = :id")
-            datos = connection.execute(sql, {'id': id}).fetchall()
+            sql = "SELECT * FROM Pedido_Producto WHERE pedido_id = ?"
+            datos = connection.execute(sql, (id, )).fetchall()
             pedidos_productos = []
             for dato in datos:
                 _pedido_producto = Pedido_Producto(dato['pedido_id'], dato['producto_id'], dato['cantidad'], dato['sub_total'])
@@ -49,9 +53,10 @@ class Pedido_Producto_Service():
             if not date_interval:
                 raise ValueError("Intervalo de fecha no válido")
 
-            sql = text("")
+            sql = ""
+            datos = []
             if date == 'dia':
-                sql = text("""
+                sql = """
                     SELECT p.producto_id, p.nombre, COUNT(*) AS cantidad_ventas, SUM(pp.sub_total) AS total_ventas
                     FROM Pedido_Producto pp
                     JOIN Producto p ON pp.producto_id = p.producto_id
@@ -59,19 +64,20 @@ class Pedido_Producto_Service():
                     WHERE DATE(pe.fecha_hora) = date('now', 'localtime', '-5 hours')
                     GROUP BY pp.producto_id, p.nombre
                     ORDER BY cantidad_ventas DESC;
-                """)
+                """
+                datos = connection.execute(sql).fetchall()
             else:
-                sql = text("""
+                sql = """
                     SELECT p.producto_id, p.nombre, COUNT(*) AS cantidad_ventas, SUM(pp.sub_total) AS total_ventas
                     FROM Pedido_Producto pp
                     JOIN Producto p ON pp.producto_id = p.producto_id
                     JOIN Pedido pe ON pp.pedido_id = pe.pedido_id
-                    WHERE DATE(pe.fecha_hora) <= :date_interval
+                    WHERE DATE(pe.fecha_hora) <= ?
                     GROUP BY pp.producto_id, p.nombre
                     ORDER BY cantidad_ventas DESC;
-                """)
-            datos = connection.execute(sql, {'date_interval': date_interval}).fetchall()
-            print(datos)
+                """
+                datos = connection.execute(sql, ( date_interval, )).fetchall()
+            print("RANK: ", datos)
             productos = []
             for dato in datos:
                 producto = {

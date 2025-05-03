@@ -1,6 +1,5 @@
 from src.database.db_mysql import get_connection
 from src.models.extra_model import Extra
-from sqlalchemy import text
 
 class Extra_Service():
 
@@ -8,12 +7,12 @@ class Extra_Service():
     def post_extra(cls, extra):
         try:
             connection = get_connection()
-            sql = text("INSERT INTO Extra (nombre, precio, imagen_url) VALUES (:nombre, :precio, :imagen_url)")
-            connection.execute(sql, {
-                'nombre': extra.nombre,
-                'precio': extra.precio, 
-                'imagen_url': extra.imagen_url
-            })
+            sql = "INSERT INTO Extra (nombre, precio, imagen_url) VALUES (?, ?, ?)"
+            connection.execute(sql, (
+                extra.nombre,
+                extra.precio, 
+                extra.imagen_url,
+            ))
             connection.commit()
             return True, 'Extra registrada'
         except Exception as ex:
@@ -25,7 +24,7 @@ class Extra_Service():
     def get_extra(cls):
         try:
             connection = get_connection()
-            sql = text("SELECT * FROM Extra")
+            sql = "SELECT * FROM Extra"
             datos = connection.execute(sql).fetchall()
             extras = []
             for dato in datos:
@@ -39,8 +38,8 @@ class Extra_Service():
     def get_extra_by_id(cls, id):
         try:
             connection = get_connection()
-            sql = text("SELECT * FROM Extra WHERE extra_id = :id")
-            dato = connection.execute(sql, {'id': id}).fetchone()
+            sql = "SELECT * FROM Extra WHERE extra_id = (?)"
+            dato = connection.execute(sql, ( id, )).fetchone()
             if dato:
                 extra = Extra(dato['nombre'], dato['precio'], dato['imagen_url'], dato['extra_id'])
                 return extra.to_json()
@@ -53,13 +52,13 @@ class Extra_Service():
     def update_extra(cls, extra):
         try:
             connection = get_connection()
-            sql = text("UPDATE Extra SET nombre = :nombre, precio = :precio, imagen_url = :imagen_url WHERE extra_id = :id")
-            connection.execute(sql, {
-                'nombre': extra.nombre, 
-                'precio': extra.precio, 
-                'imagen_url': extra.imagen_url, 
-                'id': extra.id
-            })
+            sql = "UPDATE Extra SET nombre = ?, precio = ?, imagen_url = ? WHERE extra_id = ?"
+            connection.execute(sql, (
+                extra.nombre, 
+                extra.precio, 
+                extra.imagen_url, 
+                extra.id,
+            ))
             connection.commit()
             return True, "Extra actualizada"
         except Exception as ex:
@@ -71,8 +70,8 @@ class Extra_Service():
     def delete_extra(cls, id):
         try:
             connection = get_connection()
-            sql = text("DELETE FROM Extra WHERE extra_id = :id")
-            connection.execute(sql, {'id': id})
+            sql = "DELETE FROM Extra WHERE extra_id = (?)"
+            connection.execute(sql, ( id, ))
             connection.commit()
             return True, "Extra eliminada"
         except Exception as ex:
