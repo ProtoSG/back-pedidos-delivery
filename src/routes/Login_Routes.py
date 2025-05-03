@@ -29,7 +29,7 @@ def login_admin():
 
         acces_token = create_access_token(identity=username)
 
-        response = jsonify({'id' : admin.get('id'), 'username':admin.get('username'), 'password' : password,'token' : acces_token})
+        response = jsonify({'id' : admin.get('id'), 'username':admin.get('username'),'token' : acces_token})
         
         return response
     except Exception as ex:
