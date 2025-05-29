@@ -1,10 +1,9 @@
 from src.database.db_mysql import get_connection
-from src.models.pedido_producto_model import Pedido_Producto
+from src.models.pedido_producto_model import PedidoProducto
 
-class Pedido_Producto_Service():
-
+class PedidoProductoService():
+    @staticmethod
     def insertar_productos_pedido(pedido_id, productos):
-        print("insertar")
         try:
             connection = get_connection()
             for producto in productos:
@@ -30,7 +29,8 @@ class Pedido_Producto_Service():
             datos = connection.execute(sql, (id, )).fetchall()
             pedidos_productos = []
             for dato in datos:
-                _pedido_producto = Pedido_Producto(dato['pedido_id'], dato['producto_id'], dato['cantidad'], dato['sub_total'])
+                # dato: (pedido_id, producto_id, cantidad, sub_total)
+                _pedido_producto = PedidoProducto(dato[0], dato[1], dato[2], dato[3])
                 pedidos_productos.append(_pedido_producto.to_json())
             return pedidos_productos
         except Exception as ex:

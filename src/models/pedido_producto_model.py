@@ -1,4 +1,4 @@
-class Pedido_Producto():
+class PedidoProducto():
 
     def __init__(self, pedido_id, producto_id, cantidad, sub_total = None) -> None:
         self.pedido_id = pedido_id
