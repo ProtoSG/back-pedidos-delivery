@@ -1,7 +1,7 @@
 from src.database.db_mysql import get_connection
 from src.models.extra_model import Extra
 
-class Extra_Service():
+class ExtraService():
 
     @classmethod
     def post_extra(cls, extra):
@@ -10,7 +10,7 @@ class Extra_Service():
             sql = "INSERT INTO Extra (nombre, precio, imagen_url) VALUES (?, ?, ?)"
             connection.execute(sql, (
                 extra.nombre,
-                extra.precio, 
+                extra.precio,
                 extra.imagen_url,
             ))
             connection.commit()
@@ -26,14 +26,15 @@ class Extra_Service():
             connection = get_connection()
             sql = "SELECT * FROM Extra"
             datos = connection.execute(sql).fetchall()
+            print("DATOS: ", datos)
             extras = []
             for dato in datos:
-                extra = Extra(dato['nombre'], dato['precio'], dato['imagen_url'], dato['extra_id'])
+                extra = Extra(dato[1], dato[2], dato[3], dato[0])
                 extras.append(extra.to_json())
             return extras
         except Exception as ex:
             return str(ex)
-        
+
     @classmethod
     def get_extra_by_id(cls, id):
         try:
@@ -41,22 +42,22 @@ class Extra_Service():
             sql = "SELECT * FROM Extra WHERE extra_id = (?)"
             dato = connection.execute(sql, ( id, )).fetchone()
             if dato:
-                extra = Extra(dato['nombre'], dato['precio'], dato['imagen_url'], dato['extra_id'])
+                extra = Extra(dato[1], dato[2], dato[3], dato[0])
                 return extra.to_json()
             else:
                 return None
         except Exception as ex:
             return str(ex)
-        
+
     @classmethod
     def update_extra(cls, extra):
         try:
             connection = get_connection()
             sql = "UPDATE Extra SET nombre = ?, precio = ?, imagen_url = ? WHERE extra_id = ?"
             connection.execute(sql, (
-                extra.nombre, 
-                extra.precio, 
-                extra.imagen_url, 
+                extra.nombre,
+                extra.precio,
+                extra.imagen_url,
                 extra.id,
             ))
             connection.commit()

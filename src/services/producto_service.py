@@ -1,6 +1,6 @@
 from src.database.db_mysql import get_connection
 
-class Producto_Service():    
+class ProductoService():
     @classmethod
     def post_producto(cls, producto):
         try:
@@ -32,7 +32,7 @@ class Producto_Service():
                 FROM Producto p
                 JOIN Categoria c ON p.categoria_id = c.categoria_id;
             """
-            
+
             datos = connection.execute(sql).fetchall()
             productos = []
             for fila in datos:
@@ -51,7 +51,7 @@ class Producto_Service():
             return productos
         except Exception as ex:
             return str(ex)
-    
+
     @classmethod
     def get_producto_by_id(cls, id):
         try:
@@ -80,16 +80,16 @@ class Producto_Service():
                 return None
         except Exception as ex:
             return str(ex)
-    
+
     @classmethod
     def update_prodcuto(cls, producto):
         try:
             connection = get_connection()
             sql = """
-                UPDATE Producto 
-                SET 
-                    nombre = ?, 
-                    precio = ?, 
+                UPDATE Producto
+                SET
+                    nombre = ?,
+                    precio = ?,
                     categoria_id = ?,
                     descripcion = ?,
                     imagen_url = ?
@@ -109,7 +109,7 @@ class Producto_Service():
             return False, str(ex)
         finally:
             connection.close()
-        
+
     @classmethod
     def delete_producto(cls, id):
         try:

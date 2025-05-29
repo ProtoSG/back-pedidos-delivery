@@ -1,7 +1,7 @@
 from src.database.db_mysql import get_connection
 from src.models.admin_model import Admin
 
-class Admin_Service():
+class AdminService():
 
     @classmethod
     def post_admin(cls, admin):

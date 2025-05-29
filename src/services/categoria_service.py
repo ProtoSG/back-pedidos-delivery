@@ -1,7 +1,7 @@
 from src.database.db_mysql import get_connection
 from src.models.categoria_model import Categoria
 
-class Categoria_Service():
+class CategoriaService():
 
     @classmethod
     def post_categoria(cls, categoria):
@@ -88,7 +88,7 @@ class Categoria_Service():
                 SELECT c.categoria_id, c.nombre, SUM(pp.sub_total) AS total
                 FROM Producto p
                 JOIN Categoria c ON p.categoria_id = c.categoria_id
-                JOIN Pedido_Producto pp ON p.producto_id = pp.producto_id
+                JOIN PedidoProducto pp ON p.producto_id = pp.producto_id
                 JOIN Pedido pe ON pp.pedido_id = pe.pedido_id
                 WHERE DATE(pe.fecha_hora) <= ?
                 GROUP BY c.categoria_id, c.nombre;

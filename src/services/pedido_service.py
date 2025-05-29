@@ -1,10 +1,10 @@
 from src.database.db_mysql import get_connection
-from src.services.pedido_producto_service import Pedido_Producto_Service
-from src.services.pedido_extra_service import Pedido_Extra_Service
+from src.services.pedido_producto_service import PedidoProductoService
+from src.services.pedido_extra_service import PedidoExtraService
 from datetime import datetime, timedelta
 
-class Pedido_Service():
-
+class PedidoService():
+    @staticmethod
     def insertar_pedido(total, fecha_hora):
         try:
             connection = get_connection()
@@ -21,13 +21,13 @@ class Pedido_Service():
     @classmethod
     def post_pedido(cls, pedido, productos, extras):
         try:
-            pedido_id = Pedido_Service.insertar_pedido(pedido.total, pedido.fecha_hora)
-            Pedido_Producto_Service.insertar_productos_pedido(pedido_id, productos)
-            Pedido_Extra_Service.insertar_extras_pedido(pedido_id, extras)
+            pedido_id = PedidoService.insertar_pedido(pedido.total, pedido.fecha_hora)
+            PedidoProductoService.insertar_productos_pedido(pedido_id, productos)
+            PedidoExtraService.insertar_extras_pedido(pedido_id, extras)
             
-            return True, "Pedido creado exitosamente"
+            return True, "Pedido creado exitosamente", pedido_id
         except Exception as ex:
-            return False, str(ex)
+            return False, str(ex), None
         
     @classmethod
     def get_pedido(cls):
