@@ -8,8 +8,13 @@ def get_connection():
         url = os.environ.get("TURSO_DATABASE_URL")
         auth_token = os.environ.get("TURSO_AUTH_TOKEN")
 
-        session = libsql.connect(database=url, auth_token=auth_token)
+        # Si la URL es local (file:), no pases auth_token
+        if url and url.startswith("file:"):
+            session = libsql.connect(url)
+        else:
+            session = libsql.connect(database=url, auth_token=auth_token)
 
         return session
-    except Error:
-        print("Error: ", Error)
+    except Exception as e:
+        print("Error en get_connection:", e)
+        raise
