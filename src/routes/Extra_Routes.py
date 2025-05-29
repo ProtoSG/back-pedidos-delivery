@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.models.extra_model import Extra
-from src.services.extra_service import Extra_Service
+from src.services.extra_service import ExtraService
 from flask_jwt_extended import jwt_required
 
 extra = Blueprint('extra', __name__)
@@ -13,7 +13,7 @@ def registrar_extra():
         precio = request.json['precio']
         imagen_url = request.json['imagen_url']
         extra = Extra(nombre, precio, imagen_url)
-        exito, mensaje = Extra_Service.post_extra(extra)
+        exito, mensaje = ExtraService.post_extra(extra)
         if exito:
             return jsonify({'mensaje' : mensaje})
         else:
@@ -24,7 +24,7 @@ def registrar_extra():
 @extra.route('/extra', methods=['GET'])
 def listar_extra():
     try:
-        extras = Extra_Service.get_extra()
+        extras = ExtraService.get_extra()
 
         if extras:
             return jsonify(extras)
@@ -36,7 +36,7 @@ def listar_extra():
 @extra.route('/extra/<int:id>', methods=['GET'])
 def obtener_extra(id):
     try:
-        extra = Extra_Service.get_extra_by_id(id)
+        extra = ExtraService.get_extra_by_id(id)
         if extra:
             return jsonify(extra)
         else:
@@ -53,7 +53,7 @@ def actualizar_extra(id):
         imagen_url = request.json['imagen_url']
         extra = Extra(nombre, precio, imagen_url, id)
         
-        exito, mensaje = Extra_Service.update_extra(extra)
+        exito, mensaje = ExtraService.update_extra(extra)
         if exito:
             return jsonify({'mensaje' : mensaje})
         else:
@@ -65,7 +65,7 @@ def actualizar_extra(id):
 @jwt_required()
 def eliminar_extra(id):
     try:
-        exito, mensaje = Extra_Service.delete_extra(id)
+        exito, mensaje = ExtraService.delete_extra(id)
         if exito:
             return jsonify({'mensaje': mensaje})
         else:

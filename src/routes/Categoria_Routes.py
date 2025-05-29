@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.models.categoria_model import Categoria
-from src.services.categoria_service import Categoria_Service
+from src.services.categoria_service import CategoriaService
 from flask_jwt_extended import jwt_required
 
 categoria = Blueprint('categoria', __name__)
@@ -11,7 +11,7 @@ def registrar_categoria():
     try:
         nombre = request.json['nombre']
         categoria = Categoria(nombre)
-        exito, mensaje = Categoria_Service.post_categoria(categoria)
+        exito, mensaje = CategoriaService.post_categoria(categoria)
         if exito:
             return jsonify({'mensaje' : mensaje})
         else:
@@ -23,7 +23,7 @@ def registrar_categoria():
 @categoria.route('/categoria', methods=['GET'])
 def listar_categoria():
     try:
-        categorias = Categoria_Service.get_categoria()
+        categorias = CategoriaService.get_categoria()
 
         if categorias:
             return jsonify(categorias)
@@ -35,7 +35,7 @@ def listar_categoria():
 @categoria.route('/categoria/<int:id>', methods=['GET'])
 def obtener_categoria(id):
     try:
-        categoria = Categoria_Service.get_categoria_by_id(id)
+        categoria = CategoriaService.get_categoria_by_id(id)
         if categoria:
             return jsonify(categoria)
         else:
@@ -51,7 +51,7 @@ def actualizar_categoria(id):
 
         categoria = Categoria(nombre, id)
         
-        exito, mensaje = Categoria_Service.update_categoria(categoria)
+        exito, mensaje = CategoriaService.update_categoria(categoria)
         if exito:
             return jsonify({'mensaje' : mensaje})
         else:
@@ -63,7 +63,7 @@ def actualizar_categoria(id):
 @jwt_required()
 def eliminar_categoria(id):
     try:
-        exito, mensaje = Categoria_Service.delete_categoria(id)
+        exito, mensaje = CategoriaService.delete_categoria(id)
         if exito:
             return jsonify({'mensaje': mensaje})
         else:
@@ -74,7 +74,7 @@ def eliminar_categoria(id):
 @categoria.route('/categoria/rank/<string:date>', methods=['GET'])
 def listar_rank_categoria(date):
     try:
-        categorias = Categoria_Service.get_rank(date)
+        categorias = CategoriaService.get_rank(date)
         if categorias:
             return jsonify(categorias)
         return jsonify([])

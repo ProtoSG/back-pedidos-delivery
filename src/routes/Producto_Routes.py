@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from src.models.producto_model import Producto
-from src.services.producto_service import Producto_Service
+from src.services.producto_service import ProductoService
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from src.database.db_mysql import get_connection
 
@@ -18,7 +18,7 @@ def registrar_producto():
 
         _producto = Producto(nombre, categoria_id, precio, descripcion, imagen_url)
 
-        exito, mensaje = Producto_Service.post_producto(_producto)
+        exito, mensaje = ProductoService.post_producto(_producto)
 
         if exito:
             return jsonify({'mensaje' : mensaje})
@@ -30,7 +30,7 @@ def registrar_producto():
 @producto.route('/producto', methods=['GET'])
 def listar_producto():
     try:
-        productos = Producto_Service.get_producto()
+        productos = ProductoService.get_producto()
         if productos:
             return jsonify(productos)
         else:
@@ -41,7 +41,7 @@ def listar_producto():
 @producto.route('/producto/<int:id>', methods=['GET'])
 def obtener_producto(id):
     try:
-        producto = Producto_Service.get_producto_by_id(id)
+        producto = ProductoService.get_producto_by_id(id)
         if producto:
             return jsonify(producto)
         else:
@@ -61,7 +61,7 @@ def actualizar_producto(id):
 
         producto = Producto(nombre, categoria_id, precio, descripcion, imagen_url , id)
         
-        exito, mensaje = Producto_Service.update_prodcuto(producto)
+        exito, mensaje = ProductoService.update_prodcuto(producto)
         if exito:
             return jsonify({'mensaje' : mensaje})
         else:
@@ -73,7 +73,7 @@ def actualizar_producto(id):
 @jwt_required()
 def eliminar_producto(id):
     try:
-        exito, mensaje = Producto_Service.delete_producto(id)
+        exito, mensaje = ProductoService.delete_producto(id)
         if exito:
             return jsonify({'mensaje': mensaje})
         else:

@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from src.models.pedido_model import Pedido
 from datetime import datetime
-from src.services.pedido_service import Pedido_Service
+from src.services.pedido_service import PedidoService
 from flask_jwt_extended import jwt_required
 
 pedido = Blueprint('pedido', __name__)
@@ -17,20 +17,23 @@ def register_pedido():
         fecha_hora = hora
         pedido = Pedido(total, fecha_hora)
 
-        exito, mensaje = Pedido_Service().post_pedido(pedido, productos, extras)
+        exito, mensaje, pedido_id = PedidoService().post_pedido(pedido, productos, extras)
 
         if exito:
-            return jsonify({'mensaje' : mensaje})
+            return jsonify({'mensaje' : mensaje, 'pedido_id': pedido_id})
         else:
             return jsonify({'mensaje' : 'No se pudo registrar pedido'})
     except Exception as ex:
+        import traceback
+        print("Error en register_pedido:", ex)
+        traceback.print_exc()
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     
 @pedido.route('/pedido', methods=['GET'])
 @jwt_required()
 def listar_pedido():
     try:
-        pedidos = Pedido_Service.get_pedido()
+        pedidos = PedidoService.get_pedido()
         if pedidos:
             return jsonify(pedidos)
         else:
@@ -41,7 +44,7 @@ def listar_pedido():
 @pedido.route('/pedido/datos_dias', methods=['GET'])
 def listar_datos_dias():
     try:
-        datos_dias = Pedido_Service.get_total_dia()
+        datos_dias = PedidoService.get_total_dia()
         if datos_dias:
             return jsonify(datos_dias)
         else:
@@ -52,7 +55,7 @@ def listar_datos_dias():
 @pedido.route('/pedido/datos_semanas', methods=['GET'])
 def listar_datos_semanas():
     try:
-        datos_semanas = Pedido_Service.get_total_semana()
+        datos_semanas = PedidoService.get_total_semana()
         if datos_semanas:
             return jsonify(datos_semanas)
         else:
@@ -63,7 +66,7 @@ def listar_datos_semanas():
 @pedido.route('/pedido/datos_meses', methods=['GET'])
 def listar_datos_meses():
     try:
-        datos_meses = Pedido_Service.get_total_mes()
+        datos_meses = PedidoService.get_total_mes()
         if datos_meses:
             return jsonify(datos_meses)
         else:
@@ -74,7 +77,7 @@ def listar_datos_meses():
 @pedido.route('/pedido/datos_anos', methods=['GET'])
 def listar_datos_anos():
     try:
-        datos_anos = Pedido_Service.get_total_ano()
+        datos_anos = PedidoService.get_total_ano()
         if datos_anos:
             return jsonify(datos_anos)
         else:

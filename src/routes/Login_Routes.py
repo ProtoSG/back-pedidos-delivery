@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from src.services.admin_service import Admin_Service
+from src.services.admin_service import AdminService
 from flask_jwt_extended import create_access_token
 from flask_bcrypt import Bcrypt
 
@@ -15,7 +15,7 @@ def login_admin():
         username = request.json['username']
         password = request.json['password']
 
-        admin = Admin_Service.get_admin_by_username(username)
+        admin = AdminService.get_admin_by_username(username)
 
         print(admin)
 
