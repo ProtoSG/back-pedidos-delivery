@@ -1,4 +1,4 @@
-class Pedido_Extra():
+class PedidoExtra():
 
     def __init__(self, pedido_id, extra_id, cantidad, sub_total) -> None:
         self.pedido_id = pedido_id
