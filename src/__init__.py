@@ -3,7 +3,7 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended.jwt_manager import JWTManager
 from .routes import categoria, extra, producto, admin, login, pedido, pedido_producto, pedido_extra
 from flask_cors import CORS
-from flask_seasurf import SeaSurf
+from flask_wtf import CSRFProtect
 
 def init_app(config):
     app = Flask(__name__)
@@ -13,8 +13,9 @@ def init_app(config):
 
     Bcrypt(app)
     JWTManager(app)
-    SeaSurf(app)
 
+    csrf = CSRFProtect()
+    csrf.init_app(app)
 
     CORS(
         app,
