@@ -1,0 +1,5 @@
+sonar.projectKey=
+sonar.sources=
+sonar.host.url=
+sonar.token=
+sonar.python.coverage.reportPaths=

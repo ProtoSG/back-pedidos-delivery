@@ -8,3 +8,5 @@ rest/
 
 __pycache__/
 *.py[cod]
+
+sonar-project.properties
