@@ -16,7 +16,7 @@ def init_app(config):
 
     csrf = CSRFProtect()
     csrf.init_app(app)
-
+    csrf.exempt(auth)
     CORS(
         app,
         origins=[app.config["ORIGIN_URL"]],
