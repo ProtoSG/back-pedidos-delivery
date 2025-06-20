@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended.jwt_manager import JWTManager
-from .routes import categoria, extra, producto, admin, login, pedido, pedido_producto, pedido_extra
+from .routes import categoria, extra, producto, admin, auth, pedido, pedido_producto, pedido_extra
 from flask_cors import CORS
 from flask_wtf import CSRFProtect
 
@@ -28,7 +28,7 @@ def init_app(config):
     app.register_blueprint(extra)
     app.register_blueprint(producto)
     app.register_blueprint(admin)
-    app.register_blueprint(login)
+    app.register_blueprint(auth)
     app.register_blueprint(pedido)
     app.register_blueprint(pedido_producto)
     app.register_blueprint(pedido_extra)

@@ -1,12 +1,13 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, make_response, request, jsonify
+from flask_wtf import csrf
 from src.services.admin_service import AdminService
 from flask_jwt_extended import create_access_token
 from flask_bcrypt import Bcrypt
 
-login = Blueprint('login', __name__)
+auth = Blueprint('auth', __name__)
 bcrypt = Bcrypt()
 
-@login.route('/login', methods=['POST'])
+@auth.route('/login', methods=['POST'])
 def login_admin():
     try:
         if not request.json or 'username' not in request.json or 'password' not in request.json:
@@ -34,4 +35,12 @@ def login_admin():
         return response
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
+
+
+@auth.route('/csrf-token', methods=['GET'])
+def get_csrf_token():
+    token = csrf.generate_csrf()  
+    resp = make_response(jsonify({'csrf_token': token}))
+    resp.set_cookie('csrf_token', token, httponly=False, samesite='None', secure=True)
+    return resp
 
