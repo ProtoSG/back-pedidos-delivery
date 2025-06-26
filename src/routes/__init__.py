@@ -6,3 +6,5 @@ from .Login_Routes import auth
 from .Pedido_Routes import pedido
 from .Pedido_Producto_Routes import pedido_producto
 from .Pedido_Extra_Routes import pedido_extra
+from .Usuario_Routes import usuario
+from .Notificacion_Routes import notificacion

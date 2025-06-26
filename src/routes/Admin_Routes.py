@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from src.models.admin_model import Admin
 from src.services.admin_service import AdminService
 
@@ -60,3 +60,29 @@ def actualizar_admin(id):
             return jsonify({'mensaje' : f'No se encontro admin: {mensaje}'})
     except Exception as ex:
          return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
+
+@admin.route('/admin/validar-token', methods=['GET'])
+@jwt_required()
+def validar_token_admin():
+    try:
+        username_actual = get_jwt_identity()
+        admin_data = AdminService.get_admin_by_username(username_actual)
+
+        if not admin_data:
+            print(f"ERROR: Admin con username {username_actual} no encontrado en la base de datos")
+            return jsonify({'valido': False, 'mensaje': f'Admin con username {username_actual} no encontrado'}), 401
+
+        # Si admin_data es un objeto, conviértelo a dict si es necesario
+        if hasattr(admin_data, '__dict__'):
+            admin_data = admin_data.__dict__
+        if 'password' in admin_data:
+            del admin_data['password']
+        print(f"INFO: Token válido para admin {username_actual}")
+        return jsonify({
+            'valido': True,
+            'admin': admin_data
+        }), 200
+
+    except Exception as ex:
+        print(f"ERROR: Excepción en validar_token_admin: {str(ex)}")
+        return jsonify({'valido': False, 'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
