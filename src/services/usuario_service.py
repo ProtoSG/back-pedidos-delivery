@@ -40,7 +40,7 @@ class UsuarioService():
                 return False, "Email y password son requeridos"
 
             # Buscar usuario por email
-            query = "SELECT id, nombre, email, password, activo FROM Usuario WHERE email = ?"
+            query = "SELECT usuario_id, nombre, email, password, activo FROM Usuario WHERE email = ?"
             cursor = get_connection().cursor()
             cursor.execute(query, (email,))
             dato = cursor.fetchone()
@@ -87,7 +87,7 @@ class UsuarioService():
     @classmethod
     def get_usuario_by_email(cls, email):
         try:
-            query = "SELECT id, nombre, email, password, activo FROM Usuario WHERE email = ?"
+            query = "SELECT usuario_id, nombre, email, password, activo FROM Usuario WHERE email = ?"
             cursor = get_connection().cursor()
             cursor.execute(query, (email,))
             dato = cursor.fetchone()
