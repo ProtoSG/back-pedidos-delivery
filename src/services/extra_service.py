@@ -1,7 +1,10 @@
 from src.database.db_mysql import get_connection
 from src.models.extra_model import Extra
 
-class ExtraService():
+class ExtraService:
+    """
+    Servicio para operaciones relacionadas con extras.
+    """
 
     @classmethod
     def post_extra(cls, extra):
@@ -22,6 +25,11 @@ class ExtraService():
 
     @classmethod
     def get_extra(cls):
+        """
+        Obtiene todos los extras.
+        Returns:
+            list: Lista de extras o mensaje de error.
+        """
         try:
             connection = get_connection()
             sql = "SELECT * FROM Extra"
@@ -37,6 +45,13 @@ class ExtraService():
 
     @classmethod
     def get_extra_by_id(cls, id):
+        """
+        Obtiene un extra por su ID.
+        Args:
+            id (int): ID del extra.
+        Returns:
+            dict or None: Extra encontrado o None si no existe.
+        """
         try:
             connection = get_connection()
             sql = "SELECT * FROM Extra WHERE extra_id = (?)"
@@ -51,6 +66,13 @@ class ExtraService():
 
     @classmethod
     def update_extra(cls, extra):
+        """
+        Actualiza la información de un extra existente.
+        Args:
+            extra (Extra): Objeto extra con los datos actualizados.
+        Returns:
+            tuple: (bool, str) indicando éxito y mensaje.
+        """
         try:
             connection = get_connection()
             sql = "UPDATE Extra SET nombre = ?, precio = ?, imagen_url = ? WHERE extra_id = ?"
@@ -69,6 +91,13 @@ class ExtraService():
 
     @classmethod
     def delete_extra(cls, id):
+        """
+        Elimina un extra por su ID.
+        Args:
+            id (int): ID del extra a eliminar.
+        Returns:
+            tuple: (bool, str) indicando éxito y mensaje.
+        """
         try:
             connection = get_connection()
             sql = "DELETE FROM Extra WHERE extra_id = (?)"

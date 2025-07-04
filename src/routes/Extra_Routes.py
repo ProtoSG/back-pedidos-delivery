@@ -23,6 +23,11 @@ def registrar_extra():
 
 @extra.route('/extra', methods=['GET'])
 def listar_extra():
+    """
+    Endpoint para listar todos los extras.
+    Returns:
+        JSON: Lista de extras o mensaje de error.
+    """
     try:
         extras = ExtraService.get_extra()
 
@@ -35,12 +40,19 @@ def listar_extra():
         
 @extra.route('/extra/<int:id>', methods=['GET'])
 def obtener_extra(id):
+    """
+    Endpoint para obtener un extra por su ID.
+    Args:
+        id (int): ID del extra.
+    Returns:
+        JSON: Extra encontrado o mensaje de error.
+    """
     try:
         extra = ExtraService.get_extra_by_id(id)
         if extra:
             return jsonify(extra)
         else:
-            return jsonify({'mensaje': 'No se encontro producto'} )
+            return jsonify({'mensaje': 'No se encontro extra'} )
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     

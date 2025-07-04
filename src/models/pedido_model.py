@@ -1,29 +1,36 @@
 from datetime import datetime
 
 class Pedido():
+    """
+    Modelo que representa un pedido en el sistema.
+    """
 
-    def __init__(self, total, fecha_hora, usuario_id=None, estado='Pendiente', id=None) -> None:
+    def __init__(self, total, fecha_hora, usuario_id, estado='Pendiente', id=None) -> None:
+        """
+        Inicializa un nuevo pedido.
+        Args:
+            total (float): Total del pedido.
+            fecha_hora (str): Fecha y hora del pedido.
+            usuario_id (int): ID del usuario que realiza el pedido.
+            estado (str, opcional): Estado del pedido.
+            id (int, opcional): ID del pedido (para pedidos existentes).
+        """
         self.id = id
-        self.usuario_id = int(usuario_id) if usuario_id is not None else None
-        # Asegurar que el total siempre sea float
-        self.total = float(total) if total else 0.0
-
-        # Manejar la fecha_hora correctamente
-        if isinstance(fecha_hora, str):
-            try:
-                self.fecha_hora = fecha_hora
-            except:
-                self.fecha_hora = datetime.now().isoformat()
-        else:
-            self.fecha_hora = datetime.now().isoformat() if fecha_hora is None else str(fecha_hora)
-
-        self.estado = str(estado) if estado else 'Pendiente'
+        self.total = total
+        self.fecha_hora = fecha_hora
+        self.usuario_id = usuario_id
+        self.estado = estado
 
     def to_json(self):
+        """
+        Convierte el pedido a un diccionario JSON serializable.
+        Returns:
+            dict: Representación JSON del pedido.
+        """
         return {
-            'pedido_id': int(self.id) if self.id else None,  # Usar el mismo nombre que en la base de datos
-            'usuario_id': int(self.usuario_id) if self.usuario_id else None,
-            'total': float(self.total),
-            'fecha_hora': str(self.fecha_hora),
+            'id': self.id,
+            'total': self.total,
+            'fecha_hora': self.fecha_hora,
+            'usuario_id': self.usuario_id,
             'estado': self.estado
         }

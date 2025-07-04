@@ -29,6 +29,11 @@ def registrar_producto():
     
 @producto.route('/producto', methods=['GET'])
 def listar_producto():
+    """
+    Endpoint para listar todos los productos.
+    Returns:
+        JSON: Lista de productos o mensaje de error.
+    """
     try:
         productos = ProductoService.get_producto()
         if productos:
@@ -40,6 +45,13 @@ def listar_producto():
         
 @producto.route('/producto/<int:id>', methods=['GET'])
 def obtener_producto(id):
+    """
+    Endpoint para obtener un producto por su ID.
+    Args:
+        id (int): ID del producto.
+    Returns:
+        JSON: Producto encontrado o mensaje de error.
+    """
     try:
         producto = ProductoService.get_producto_by_id(id)
         if producto:

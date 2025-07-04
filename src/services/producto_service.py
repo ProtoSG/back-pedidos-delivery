@@ -1,6 +1,10 @@
 from src.database.db_mysql import get_connection
 
-class ProductoService():
+class ProductoService:
+    """
+    Servicio para operaciones relacionadas con productos.
+    """
+
     @classmethod
     def post_producto(cls, producto):
         try:
@@ -25,6 +29,11 @@ class ProductoService():
 
     @classmethod
     def get_producto(cls):
+        """
+        Obtiene todos los productos con su información de categoría.
+        Returns:
+            list: Lista de productos o mensaje de error.
+        """
         try:
             connection = get_connection()
             sql = """
@@ -32,7 +41,6 @@ class ProductoService():
                 FROM Producto p
                 JOIN Categoria c ON p.categoria_id = c.categoria_id;
             """
-
             datos = connection.execute(sql).fetchall()
             productos = []
             for fila in datos:
@@ -43,8 +51,8 @@ class ProductoService():
                     'descripcion': fila[3],
                     'imagen_url': fila[4],
                     'categoria': {
-                        'id' : fila[5],
-                        'nombre' : fila[6]
+                        'id': fila[5],
+                        'nombre': fila[6]
                     }
                 }
                 productos.append(producto)
@@ -54,6 +62,13 @@ class ProductoService():
 
     @classmethod
     def get_producto_by_id(cls, id):
+        """
+        Obtiene un producto por su ID.
+        Args:
+            id (int): ID del producto.
+        Returns:
+            dict or None: Producto encontrado o None si no existe.
+        """
         try:
             connection = get_connection()
             sql = """
@@ -71,8 +86,8 @@ class ProductoService():
                     'descripcion': dato[3],
                     'imagen_url': dato[4],
                     'categoria': {
-                        'id' : dato[5],
-                        'nombre' : dato[6],
+                        'id': dato[5],
+                        'nombre': dato[6],
                     }
                 }
                 return _producto
@@ -83,6 +98,13 @@ class ProductoService():
 
     @classmethod
     def update_prodcuto(cls, producto):
+        """
+        Actualiza la información de un producto existente.
+        Args:
+            producto (Producto): Objeto producto con los datos actualizados.
+        Returns:
+            tuple: (bool, str) indicando éxito y mensaje.
+        """
         try:
             connection = get_connection()
             sql = """
@@ -112,10 +134,17 @@ class ProductoService():
 
     @classmethod
     def delete_producto(cls, id):
+        """
+        Elimina un producto por su ID.
+        Args:
+            id (int): ID del producto a eliminar.
+        Returns:
+            tuple: (bool, str) indicando éxito y mensaje.
+        """
         try:
             connection = get_connection()
-            sql = "DELETE FROM Producto WHERE producto_id = ?"
-            connection.execute(sql, ( id, ))
+            sql = "DELETE FROM Producto WHERE producto_id = (?)"
+            connection.execute(sql, (id,))
             connection.commit()
             return True, "Producto eliminado"
         except Exception as ex:

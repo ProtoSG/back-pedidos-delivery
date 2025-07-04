@@ -17,9 +17,12 @@ def init_app(config):
     # Deshabilitamos CSRF completamente para APIs JSON
     app.config['WTF_CSRF_ENABLED'] = False
 
+    # Configuración robusta de CORS para desarrollo
+    origin_url = app.config.get("ORIGIN_URL", "http://localhost:5173")
+    print(f"[CORS] Permitiendo origen: {origin_url}")
     CORS(
         app,
-        origins=[app.config["ORIGIN_URL"]],
+        origins=[origin_url],
         supports_credentials=True
     )
 

@@ -1,7 +1,10 @@
 from src.database.db_mysql import get_connection
 from src.models.categoria_model import Categoria
 
-class CategoriaService():
+class CategoriaService:
+    """
+    Servicio para operaciones relacionadas con categorías.
+    """
 
     @classmethod
     def post_categoria(cls, categoria):
@@ -18,6 +21,11 @@ class CategoriaService():
 
     @classmethod
     def get_categoria(cls):
+        """
+        Obtiene todas las categorías.
+        Returns:
+            list: Lista de categorías o mensaje de error.
+        """
         try:
             connection = get_connection()
             if connection is not None:
@@ -33,6 +41,13 @@ class CategoriaService():
         
     @classmethod
     def get_categoria_by_id(cls, id):
+        """
+        Obtiene una categoría por su ID.
+        Args:
+            id (int): ID de la categoría.
+        Returns:
+            dict or None: Categoría encontrada o None si no existe.
+        """
         try:
             connection = get_connection()
             sql = "SELECT * FROM Categoria WHERE categoria_id = (?)"
@@ -47,6 +62,13 @@ class CategoriaService():
         
     @classmethod
     def update_categoria(cls, categoria):
+        """
+        Actualiza la información de una categoría existente.
+        Args:
+            categoria (Categoria): Objeto categoría con los datos actualizados.
+        Returns:
+            tuple: (bool, str) indicando éxito y mensaje.
+        """
         try:
             connection = get_connection()
             sql = "UPDATE Categoria SET nombre = ? WHERE categoria_id = ?"
@@ -63,6 +85,13 @@ class CategoriaService():
 
     @classmethod
     def delete_categoria(cls, id):
+        """
+        Elimina una categoría por su ID.
+        Args:
+            id (int): ID de la categoría a eliminar.
+        Returns:
+            tuple: (bool, str) indicando éxito y mensaje.
+        """
         try:
             connection = get_connection()
             sql = "DELETE FROM Categoria WHERE categoria_id = (?)"

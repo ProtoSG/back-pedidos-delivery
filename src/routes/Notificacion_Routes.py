@@ -6,6 +6,40 @@ import traceback
 
 notificacion = Blueprint('notificacion', __name__)
 
+@notificacion.route('/notificacion', methods=['GET'])
+def listar_notificaciones():
+    """
+    Endpoint para listar todas las notificaciones.
+    Returns:
+        JSON: Lista de notificaciones o mensaje de error.
+    """
+    try:
+        notificaciones = NotificacionService.get_notificaciones()
+        if notificaciones:
+            return jsonify(notificaciones)
+        else:
+            return jsonify([])
+    except Exception as ex:
+        return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
+
+@notificacion.route('/notificacion/<int:id>', methods=['GET'])
+def obtener_notificacion(id):
+    """
+    Endpoint para obtener una notificación por su ID.
+    Args:
+        id (int): ID de la notificación.
+    Returns:
+        JSON: Notificación encontrada o mensaje de error.
+    """
+    try:
+        notificacion = NotificacionService.get_notificacion_by_id(id)
+        if notificacion:
+            return jsonify(notificacion)
+        else:
+            return jsonify({'mensaje': 'No se encontro notificación'} )
+    except Exception as ex:
+        return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
+
 @notificacion.route('/notificaciones', methods=['GET'])
 @jwt_required()
 def get_notificaciones_usuario():

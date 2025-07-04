@@ -9,6 +9,11 @@ bcrypt = Bcrypt()
 
 @admin.route('/admin', methods=['POST'])
 def registrar_admin():
+    """
+    Endpoint para registrar un nuevo administrador.
+    Returns:
+        JSON: Mensaje de éxito o error.
+    """
     try:
         username = request.json['username']
         password = request.json['password']
@@ -32,8 +37,31 @@ def registrar_admin():
         traceback.print_exc()
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
 
+@admin.route('/admin', methods=['GET'])
+def listar_admins():
+    """
+    Endpoint para listar todos los administradores.
+    Returns:
+        JSON: Lista de administradores o mensaje de error.
+    """
+    try:
+        admins = AdminService.get_admins()
+        if admins:
+            return jsonify(admins)
+        else:
+            return jsonify([])
+    except Exception as ex:
+        return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
+
 @admin.route('/admin/<int:id>', methods=['GET'])
-def get_admin(id):
+def obtener_admin(id):
+    """
+    Endpoint para obtener un administrador por su ID.
+    Args:
+        id (int): ID del administrador.
+    Returns:
+        JSON: Administrador encontrado o mensaje de error.
+    """
     try:
         admin = AdminService.get_admin_by_id(id)
         if admin:

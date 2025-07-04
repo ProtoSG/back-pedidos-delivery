@@ -102,6 +102,11 @@ def register_pedido():
 @pedido.route('/pedido', methods=['GET'])
 @jwt_required()
 def listar_pedido():
+    """
+    Endpoint para listar todos los pedidos.
+    Returns:
+        JSON: Lista de pedidos o mensaje de error.
+    """
     try:
         pedidos = PedidoService.get_pedido()
         if pedidos:

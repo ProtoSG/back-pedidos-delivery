@@ -22,6 +22,11 @@ def registrar_categoria():
 
 @categoria.route('/categoria', methods=['GET'])
 def listar_categoria():
+    """
+    Endpoint para listar todas las categorías.
+    Returns:
+        JSON: Lista de categorías o mensaje de error.
+    """
     try:
         categorias = CategoriaService.get_categoria()
 
@@ -34,12 +39,19 @@ def listar_categoria():
         
 @categoria.route('/categoria/<int:id>', methods=['GET'])
 def obtener_categoria(id):
+    """
+    Endpoint para obtener una categoría por su ID.
+    Args:
+        id (int): ID de la categoría.
+    Returns:
+        JSON: Categoría encontrada o mensaje de error.
+    """
     try:
         categoria = CategoriaService.get_categoria_by_id(id)
         if categoria:
             return jsonify(categoria)
         else:
-            return jsonify({'mensaje': 'No se encontro producto'} )
+            return jsonify({'mensaje': 'No se encontro categoria'} )
     except Exception as ex:
         return jsonify({'mensaje': f'Error interno del servidor: {str(ex)}'}), 500
     

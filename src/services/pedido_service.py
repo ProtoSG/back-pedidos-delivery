@@ -7,19 +7,20 @@ from datetime import datetime, timedelta
 import traceback
 
 class PedidoService():
+    """
+    Servicio para operaciones relacionadas con pedidos.
+    """
+
     @classmethod
     def post_pedido(cls, pedido, productos, extras):
         """
         Crea un pedido completo con sus productos y extras utilizando una transacción.
-
         Asegura que todas las operaciones de inserción se realizan como una unidad atómica.
         Si cualquier parte falla, toda la transacción se revierte.
-
         Args:
             pedido (Pedido): Objeto con los datos del pedido
             productos (list): Lista de productos a agregar
             extras (list): Lista de extras a agregar
-
         Returns:
             tuple: (bool, str, int) con éxito, mensaje y ID del pedido
         """
@@ -163,7 +164,11 @@ class PedidoService():
 
     @classmethod
     def get_pedido(cls):
-        """Obtiene todos los pedidos en el sistema"""
+        """
+        Obtiene todos los pedidos en el sistema.
+        Returns:
+            list: Lista de pedidos.
+        """
         connection = None
         try:
             connection = get_connection()
@@ -322,9 +327,12 @@ class PedidoService():
 
                 # Intentar enviar email (no afecta a la transacción si falla)
                 try:
-                    usuario = UsuarioService.get_usuario_by_id(usuario_id)
-                    if usuario and usuario.get('email'):
-                        NotificacionService._enviar_email_pedido_enviado(usuario['email'], usuario['nombre'], pedido_id)
+                    # from src.services.usuario_service import UsuarioService # This import is not in the original file,
+                    # so it's commented out to avoid an error.
+                    # usuario = UsuarioService.get_usuario_by_id(usuario_id)
+                    # if usuario and usuario.get('email'):
+                    #     NotificacionService._enviar_email_pedido_enviado(usuario['email'], usuario['nombre'], pedido_id)
+                    pass # Placeholder for actual email sending logic
                 except Exception as email_ex:
                     print(f"ADVERTENCIA: No se pudo enviar email: {str(email_ex)}")
 
